@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 
 const { deck } = await setup(onKeyPress);
 
+let currentPage = 0;
 
 
 const actions = [
@@ -19,7 +20,15 @@ const actions = [
     2: () => robot.keyTap("b"),
     3: () => robot.keyTap("c"),
     4: () => robot.keyTap("d"),
-    5: () => robot.keyTap("e"),
+    5: () => currentPage = 1,
+  },
+  {
+    0: () => robot.keyTap("f"),
+    1: () => robot.keyTap("a"),
+    2: () => robot.keyTap("b"),
+    3: () => robot.keyTap("c"),
+    4: () => robot.keyTap("d"),
+    5: () => currentPage = 0,
   }
 ];
 
@@ -30,11 +39,27 @@ const images = [
     2: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
     3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
     4: await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-    // 5: await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "f"),
+    5: await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+  },
+  {
+    0: await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
+    1: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+    2: await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+    3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+    4: await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+    5: await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
   }
 ]
 
 const frames = [
+  {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  },
   {
     0: 0,
     1: 0,
@@ -47,7 +72,7 @@ const frames = [
 
 
 function onKeyPress(key: number) {
-  actions[0][key]();
+  actions[currentPage][key]();
 }
 
 
@@ -55,18 +80,18 @@ function onKeyPress(key: number) {
 for (let i = 0; i < 6; i++) {
   (async () => {
     while (1) {
-
-      let _images = images[0][i];
+      const page = currentPage;
+      let _images = images[page][i];
 
       if (_images) {
 
-        await deck.fillKeyBuffer(i, _images[frames[0][i]].buffer, { format: 'rgba' });
-        if (frames[0][i] === _images.length - 1) {
-          frames[0][i] = 0;
+        await deck.fillKeyBuffer(i, _images[frames[page][i]].buffer, { format: 'rgba' });
+        if (frames[page][i] === _images.length - 1) {
+          frames[page][i] = 0;
         } else {
-          frames[0][i]++;
+          frames[page][i]++;
         }
-        await new Promise(resolve => setTimeout(resolve, _images[frames[0][i]].delay * 10));
+        await new Promise(resolve => setTimeout(resolve, _images[frames[page][i]].delay * 10));
       } else {
         await new Promise(resolve => setTimeout(resolve, 5));
       }
