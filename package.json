@@ -1,0 +1,23 @@
+{
+  "name": "stream-deck",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@elgato-stream-deck/node": "^7.3.2",
+    "@elgato-stream-deck/webhid": "^7.3.2",
+    "gif-frames": "^1.0.1",
+    "gifwrap": "^0.10.1",
+    "robotjs": "^0.6.0",
+    "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0"
+  }
+}
