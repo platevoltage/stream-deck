@@ -2,7 +2,7 @@
 import path from "path";
 import { fileURLToPath } from 'url';
 import robot from "robotjs";
-import { setup, stillIcon, animatedIcon, stillPanel } from "./utils/utils.ts"
+import { setup, stillIcon, animatedIcon, stillPanel, pageChange } from "./utils/utils.ts"
 import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const { deck } = await setup(onKeyPress);
 
 let currentPage = 0;
-
+let pause = false;
 
 const actions = [
   {
@@ -20,7 +20,14 @@ const actions = [
     2: () => robot.keyTap("b"),
     3: () => robot.keyTap("c"),
     4: () => robot.keyTap("d"),
-    5: () => currentPage = 1,
+    5: async () => {
+      if (!pause) {
+        currentPage = 1;
+        pause = true;
+        await pageChange(deck, images, currentPage);
+        pause = false;
+      }
+    }
   },
   {
     0: () => robot.keyTap("f"),
@@ -28,13 +35,20 @@ const actions = [
     2: () => robot.keyTap("b"),
     3: () => robot.keyTap("c"),
     4: () => robot.keyTap("d"),
-    5: () => currentPage = 0,
+    5: async () => {
+      if (!pause) {
+        currentPage = 0;
+        pause = true;
+        await pageChange(deck, images, currentPage);
+        pause = false;
+      }
+    }
   }
 ];
 
 const images = [
   {
-    0: await stillIcon(path.resolve(__dirname, "images", `link.png`), "Menu"),
+    0: await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
     1: await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
     2: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
     3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
@@ -79,7 +93,10 @@ function onKeyPress(key: number) {
 
 for (let i = 0; i < 6; i++) {
   (async () => {
-    while (1) {
+    while (true) {
+      while (pause) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
       const page = currentPage;
       let _images = images[page][i];
 

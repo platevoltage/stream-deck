@@ -166,7 +166,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
       .composite([
         {
           input: image,
-          top: Math.round((80 - width) / (label.length > 0 ? 3 : 2)),
+          top: Math.round((80 - width) / (label.length > 0 ? 4 : 2)),
           left: Math.round((80 - width) / 2)
         },
         { input: text, top: 0, left: 0 }
@@ -177,4 +177,32 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
   }
 
   return images;
+}
+
+export async function pageChange(deck: any, images: any[], currentPage: number) {
+  await deck.fillKeyColor(0, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(1, 255, 255, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(2, 255, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(3, 0, 255, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(4, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(5, 0, 255, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  // await deck.fillKeyColor(0, 0, 0, 0);
+  await deck.fillKeyBuffer(0, images[currentPage][0][0].buffer, { format: 'rgba' });
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyBuffer(1, images[currentPage][1][0].buffer, { format: 'rgba' });
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyBuffer(2, images[currentPage][2][0].buffer, { format: 'rgba' });
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyBuffer(3, images[currentPage][3][0].buffer, { format: 'rgba' });
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyBuffer(4, images[currentPage][4][0].buffer, { format: 'rgba' });
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyBuffer(5, images[currentPage][5][0].buffer, { format: 'rgba' });
+  await new Promise(resolve => setTimeout(resolve, 50));
 }
