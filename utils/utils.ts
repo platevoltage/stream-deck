@@ -38,6 +38,16 @@ export async function setup(onKeyPress: (key: number) => void) {
 }
 
 
+export async function stillPanel(iconPath: string): Promise<Buffer> {
+
+  const icon = await sharp(iconPath)
+    .resize(240, 160, { fit: 'contain' }) // upper part for the icon
+    .removeAlpha() // <-- strips alpha
+    .raw()
+    .toBuffer();
+
+  return icon
+}
 
 export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<Buffer[]> {
   const width = 80 * (sizePercentage / 100);
@@ -91,21 +101,24 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
   return [combined];
 }
 
-export async function animatedIcon(gifPath: string, label: string = "", sizePercentage: number = 100) {
+export async function animatedIcon(gifPath: string, label: string = "", sizePercentage: number = 100, cumulative = true) {
   const width = 80 * (sizePercentage / 100);
 
-  const frameData = await gifFrames({ url: gifPath, frames: "all", outputType: "png", cumulative: true });
+  const frameData = await gifFrames({ url: gifPath, frames: "all", outputType: "png", cumulative });
+
+
+
 
   const buffers = await Promise.all(
     frameData.map(async (frame) => {
       const chunks: Buffer[] = [];
 
-      return new Promise<Buffer>((resolve, reject) => {
+      return new Promise<{ buffer: Buffer, delay: number }>((resolve, reject) => {
         frame.getImage()
           .on("data", chunk => chunks.push(chunk))
           .on("end", () => {
             const pngBuffer = Buffer.concat(chunks);
-            resolve(pngBuffer); // This is a valid PNG now
+            resolve({ buffer: pngBuffer, delay: frame.frameInfo.delay }); // This is a valid PNG now
           })
           .on("error", reject);
       });
@@ -134,10 +147,10 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
     .rotate(ROTATE)
     .toBuffer();
 
-  const images: Buffer<ArrayBufferLike>[] = [];
+  const images: { buffer: Buffer<ArrayBufferLike>, delay: number }[] = [];
 
-  for (let buffer of buffers) {
-    const image = await sharp(Buffer.from(buffer))
+  for (let _buffer of buffers) {
+    const image = await sharp(Buffer.from(_buffer.buffer))
       .resize(width, width, { fit: 'contain' })
       .rotate(ROTATE)
       // .removeAlpha()         // strip alpha if present
@@ -160,7 +173,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
       ])
       .raw()
       .toBuffer();
-    images.push(combined);
+    images.push({ buffer: combined, delay: _buffer.delay });
   }
 
   return images;
