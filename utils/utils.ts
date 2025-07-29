@@ -49,7 +49,7 @@ export async function stillPanel(iconPath: string): Promise<Buffer> {
   return icon
 }
 
-export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<Buffer[]> {
+export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<{ buffer: Buffer }[]> {
   const width = 80 * (sizePercentage / 100);
   const icon = await sharp(iconPath)
     .resize(width, width, { fit: 'contain' }) // upper part for the icon
@@ -98,7 +98,7 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
     .toBuffer();
 
 
-  return [combined];
+  return [{ buffer: combined }];
 }
 
 export async function animatedIcon(gifPath: string, label: string = "", sizePercentage: number = 100, cumulative = true) {

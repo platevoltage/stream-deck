@@ -34,7 +34,7 @@ const actions = [
 
 const images = [
   {
-    0: await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+    0: await stillIcon(path.resolve(__dirname, "images", `link.png`), "Menu"),
     1: await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
     2: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
     3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
@@ -86,14 +86,18 @@ for (let i = 0; i < 6; i++) {
       if (_images) {
 
         await deck.fillKeyBuffer(i, _images[frames[page][i]].buffer, { format: 'rgba' });
+        if (_images[frames[page][i]].delay) {
+          await new Promise(resolve => setTimeout(resolve, _images[frames[page][i]].delay * 10));
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
         if (frames[page][i] === _images.length - 1) {
           frames[page][i] = 0;
         } else {
           frames[page][i]++;
         }
-        await new Promise(resolve => setTimeout(resolve, _images[frames[page][i]].delay * 10));
       } else {
-        await new Promise(resolve => setTimeout(resolve, 5));
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
   })();
