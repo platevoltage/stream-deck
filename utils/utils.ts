@@ -53,12 +53,13 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
           fill: white;
           font-size: 14px;
           font-family: sans-serif;
+          font-weight: 700;
           dominant-baseline: middle;
           text-anchor: middle;
         }
       </style>
       <rect width="100%" height="100%" fill="#00000000" />
-      <text x="50%" y="86%" class="label">${label}</text>
+      <text x="50%" y="90%" class="label">${label}</text>
     </svg>
   `;
 
@@ -117,13 +118,14 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
         .label {
           fill: white;
           font-size: 14px;
+          font-weight: 700;
           font-family: sans-serif;
           dominant-baseline: middle;
           text-anchor: middle;
         }
       </style>
       <rect width="100%" height="100%" fill="#00000000" />
-      <text x="50%" y="86%" class="label">${label}</text>
+      <text x="50%" y="90%" class="label">${label}</text>
     </svg>
   `;
 
@@ -138,7 +140,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
     const image = await sharp(Buffer.from(buffer))
       .resize(width, width, { fit: 'contain' })
       .rotate(ROTATE)
-      .removeAlpha()         // strip alpha if present
+      // .removeAlpha()         // strip alpha if present
       .toBuffer()
     const combined = await sharp({
       create: {
