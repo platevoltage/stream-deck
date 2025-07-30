@@ -44,21 +44,7 @@ const actions = [
       }
     }
   ],
-  [
-    () => sendKeypress(KeyCode.KEY_ENTER),
-    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_B),
-    () => sendKeypress(KeyCode.KEY_C),
-    () => sendKeypress(KeyCode.KEY_D),
-    async () => {
-      if (!pause) {
-        currentPage = 0;
-        pause = true;
-        await pageChange(deck, images, currentPage);
-        pause = false;
-      }
-    }
-  ]
+
 ];
 
 const images: {
@@ -81,14 +67,7 @@ const images: {
       await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
       await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
     ],
-    [
-      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-      await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
-      await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-      await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-      await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-    ]
+
   ]
 
 const frames = [
