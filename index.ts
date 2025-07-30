@@ -17,7 +17,7 @@ let pause = false;
 const actions = [
   {
     0: () => sendKeypress(keymap.KEY_ENTER),
-    1: () => sendKeypress(keymap.KEY_A),
+    1: () => sendKeypress(keymap.KEY_A, keymap.KEY_LEFTSHIFT),
     2: () => sendKeypress(keymap.KEY_B),
     3: () => sendKeypress(keymap.KEY_C),
     4: () => sendKeypress(keymap.KEY_D),

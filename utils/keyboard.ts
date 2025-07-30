@@ -1,6 +1,6 @@
 import { spawn } from 'child_process';
 
-export async function sendKeypress(keyCode: number, modifierCode: number = 42): Promise<void> {
+export async function sendKeypress(keyCode: number, modifierCode?: number): Promise<void> {
     return new Promise((resolve, reject) => {
         const evemu = spawn('sudo', ['evemu-play', '/dev/input/virtual-kbd']);
 
