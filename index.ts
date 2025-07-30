@@ -13,7 +13,7 @@ const { deck } = await setup(onKeyPress);
 let currentPage = 0;
 let pause = false;
 
-const actions = [
+const actions: (() => unknown)[][] = [
   [
     () => sendKeypress(KeyCode.KEY_ENTER),
     () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
