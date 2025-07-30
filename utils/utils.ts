@@ -297,6 +297,11 @@ export async function getFileCRC32(filePath: string): Promise<string> {
 }
 
 async function saveImagesToFile(images: ImageFrame[], filePath: string) {
+  const dir = path.join(process.cwd(), 'cache');
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
   const encoded = images.map(img => ({
     delay: img.delay,
     buffer: img.buffer.toString('base64'),
