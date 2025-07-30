@@ -3,7 +3,6 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation } from "./utils/utils.ts"
 import type { ImageFrame } from "./utils/utils.ts"
-import sharp from 'sharp';
 import { sendKeypress, KeyCode } from "./utils/keyboard.ts";
 
 const __filename = fileURLToPath(import.meta.url);
