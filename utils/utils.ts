@@ -120,6 +120,16 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
   const baseName = path.basename(gifPath);
   console.log(baseName, 'CRC32:', crc);
 
+  try {
+    const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
+    if (file) {
+      console.log("found");
+      return file;
+    }
+  } catch (e) {
+    console.log("not found");
+  }
+
 
   const width = 80 * (sizePercentage / 100);
 
@@ -195,7 +205,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
     images.push({ buffer: combined, delay: _buffer.delay });
   }
 
-  saveImagesToFile(images, path.join(__dirname, "cache", gifPath));
+  saveImagesToFile(images, path.join(__dirname, "../", "cache", crc + ".json"));
 
   return images;
 }
