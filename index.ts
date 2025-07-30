@@ -1,7 +1,7 @@
 
 import path from "path";
 import { fileURLToPath } from 'url';
-import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation } from "./utils/utils.ts"
+import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, ImageFrame } from "./utils/utils.ts"
 import sharp from 'sharp';
 import { sendKeypress, KeyCode } from "./utils/keyboard.ts";
 
@@ -53,28 +53,25 @@ let loading = true;
     await loadingAnimation(deck);
 })();
 
-const images: {
-  buffer: Buffer<ArrayBufferLike>;
-  delay?: number;
-}[][][] = [
-    [
-      await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
-      await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
-      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-      await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-      await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-      await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-    ],
-    [
-      await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-      await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
-      await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
-      await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-      await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-      await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-    ],
+const images: ImageFrame[][][] = [
+  [
+    await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+    await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
+    await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+    await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+    await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+  ],
+  [
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
+    await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+    await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+  ],
 
-  ];
+];
 
 loading = false;
 await new Promise(resolve => setTimeout(resolve, 100));

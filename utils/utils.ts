@@ -59,7 +59,7 @@ export async function stillPanel(iconPath: string): Promise<Buffer> {
   return icon
 }
 
-export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<{ buffer: Buffer }[]> {
+export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<ImageFrame[]> {
   const crc = await getFileCRC32(iconPath);
   console.log(path.basename(iconPath), 'CRC32:', crc);
 
@@ -153,7 +153,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
     frameData.map(async (frame) => {
       const chunks: Buffer[] = [];
 
-      return new Promise<{ buffer: Buffer, delay: number }>((resolve, reject) => {
+      return new Promise<ImageFrame>((resolve, reject) => {
         frame.getImage()
           .on("data", chunk => chunks.push(chunk))
           .on("end", () => {
