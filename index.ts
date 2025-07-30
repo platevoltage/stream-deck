@@ -46,43 +46,32 @@ const actions = [
   }
 ];
 
-const images = [
-  {
-    0: await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
-    1: await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
-    2: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-    3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-    4: await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-    5: await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-  },
-  {
-    0: await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-    1: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-    2: await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
-    3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-    4: await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-    5: await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-  }
-]
+const images: {
+  buffer: Buffer<ArrayBufferLike>;
+  delay?: number;
+}[][][] = [
+    [
+      await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+      await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
+      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+      await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+      await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+      await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+    ],
+    [
+      await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+      await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+      await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+      await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+      await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+    ]
+  ]
 
-const frames = [
-  {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-  },
-  {
-    0: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-  }
-]
+const frames = new Array(2).fill(
+  new Array(6).fill(0)
+);
+
 
 
 function onKeyPress(key: number) {
@@ -104,7 +93,7 @@ for (let i = 0; i < 6; i++) {
 
         await deck.fillKeyBuffer(i, _images[frames[page][i]].buffer, { format: 'rgba' });
         if (_images[frames[page][i]].delay) {
-          await new Promise(resolve => setTimeout(resolve, _images[frames[page][i]].delay * 10));
+          await new Promise(resolve => setTimeout(resolve, _images[frames[page][i]].delay! * 10));
         } else {
           await new Promise(resolve => setTimeout(resolve, 100));
         }
