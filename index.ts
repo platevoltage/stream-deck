@@ -56,7 +56,7 @@ const images = [
     5: await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
   },
   {
-    0: await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
+    0: await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
     1: await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
     2: await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
     3: await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
