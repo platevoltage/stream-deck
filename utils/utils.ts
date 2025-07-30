@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 export type ImageFrame = {
   buffer: Buffer;
-  delay: number;
+  delay?: number;
 };
 
 export async function setup(onKeyPress: (key: number) => void) {
@@ -63,6 +63,16 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
   const crc = await getFileCRC32(iconPath);
   console.log(path.basename(iconPath), 'CRC32:', crc);
 
+  try {
+    const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
+    if (file) {
+      console.log("found");
+      return file;
+    }
+  } catch (e) {
+    console.log("not found");
+  }
+
   const width = 80 * (sizePercentage / 100);
   const icon = await sharp(iconPath)
     .resize(width, width, { fit: 'contain' }) // upper part for the icon
@@ -110,6 +120,7 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
     .raw()
     .toBuffer();
 
+  saveImagesToFile([{ buffer: combined }], path.join(__dirname, "../", "cache", crc + ".json"));
 
   return [{ buffer: combined }];
 }
