@@ -29,12 +29,14 @@ E: 0.100000 0000 0000 0000
             if (code === 0) {
                 resolve();
             } else {
-                reject(new Error(`evemu-play exited with code ${code}`));
+                console.error(`evemu-play exited with code ${code}`);
+                resolve();
             }
         });
 
         evemu.on('error', (err) => {
-            reject(err);
+            console.error(err);
+            resolve();
         });
     });
 }

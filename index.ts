@@ -14,13 +14,13 @@ let currentPage = 0;
 let pause = false;
 
 const actions = [
-  {
-    0: () => sendKeypress(KeyCode.KEY_ENTER),
-    1: () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
-    2: () => sendKeypress(KeyCode.KEY_B),
-    3: () => sendKeypress(KeyCode.KEY_C),
-    4: () => sendKeypress(KeyCode.KEY_D),
-    5: async () => {
+  [
+    () => sendKeypress(KeyCode.KEY_ENTER),
+    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_B),
+    () => sendKeypress(KeyCode.KEY_C),
+    () => sendKeypress(KeyCode.KEY_D),
+    async () => {
       if (!pause) {
         currentPage = 1;
         pause = true;
@@ -28,14 +28,14 @@ const actions = [
         pause = false;
       }
     }
-  },
-  {
-    0: () => sendKeypress(KeyCode.KEY_ENTER),
-    1: () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
-    2: () => sendKeypress(KeyCode.KEY_B),
-    3: () => sendKeypress(KeyCode.KEY_C),
-    4: () => sendKeypress(KeyCode.KEY_D),
-    5: async () => {
+  ],
+  [
+    () => sendKeypress(KeyCode.KEY_ENTER),
+    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_B),
+    () => sendKeypress(KeyCode.KEY_C),
+    () => sendKeypress(KeyCode.KEY_D),
+    async () => {
       if (!pause) {
         currentPage = 0;
         pause = true;
@@ -43,7 +43,22 @@ const actions = [
         pause = false;
       }
     }
-  }
+  ],
+  [
+    () => sendKeypress(KeyCode.KEY_ENTER),
+    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_B),
+    () => sendKeypress(KeyCode.KEY_C),
+    () => sendKeypress(KeyCode.KEY_D),
+    async () => {
+      if (!pause) {
+        currentPage = 0;
+        pause = true;
+        await pageChange(deck, images, currentPage);
+        pause = false;
+      }
+    }
+  ]
 ];
 
 const images: {
@@ -65,12 +80,22 @@ const images: {
       await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
       await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
       await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+    ],
+    [
+      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+      await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+      await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+      await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+      await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+      await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
     ]
   ]
 
-const frames = new Array(2).fill(
-  new Array(6).fill(0)
-);
+const frames = [
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0],
+];
 
 
 
@@ -88,16 +113,21 @@ for (let i = 0; i < 6; i++) {
       }
       const page = currentPage;
       let _images = images[page][i];
+      let index = frames[page][i];
 
       if (_images) {
-
-        await deck.fillKeyBuffer(i, _images[frames[page][i]].buffer, { format: 'rgba' });
-        if (_images[frames[page][i]].delay) {
-          await new Promise(resolve => setTimeout(resolve, _images[frames[page][i]].delay! * 10));
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 100));
+        try {
+          const _image = _images[index];
+          await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
+          if (_image.delay) {
+            await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        } catch (e) {
+          console.error(e);
         }
-        if (frames[page][i] === _images.length - 1) {
+        if (index >= _images.length - 1) {
           frames[page][i] = 0;
         } else {
           frames[page][i]++;
