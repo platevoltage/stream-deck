@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import robot from "robotjs";
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange } from "./utils/utils.ts"
 import sharp from 'sharp';
-import { sendKeypress } from "./utils/keyboard.ts";
+import { sendKeypress, keymap } from "./utils/keyboard.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,11 +16,11 @@ let pause = false;
 
 const actions = [
   {
-    0: () => sendKeypress(),
-    1: () => robot.keyTap("a"),
-    2: () => robot.keyTap("b"),
-    3: () => robot.keyTap("c"),
-    4: () => robot.keyTap("d"),
+    0: () => sendKeypress(keymap.KEY_ENTER),
+    1: () => sendKeypress(keymap.KEY_A),
+    2: () => sendKeypress(keymap.KEY_B),
+    3: () => sendKeypress(keymap.KEY_C),
+    4: () => sendKeypress(keymap.KEY_D),
     5: async () => {
       if (!pause) {
         currentPage = 1;
