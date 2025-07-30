@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import robot from "robotjs";
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange } from "./utils/utils.ts"
 import sharp from 'sharp';
+import { sendKeypress } from "./utils/keyboard.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +16,7 @@ let pause = false;
 
 const actions = [
   {
-    0: () => robot.keyTap("f"),
+    0: () => sendKeypress(),
     1: () => robot.keyTap("a"),
     2: () => robot.keyTap("b"),
     3: () => robot.keyTap("c"),
