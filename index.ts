@@ -13,7 +13,7 @@ const { deck } = await setup(onKeyPress);
 let currentPage = 0;
 let pause = false;
 
-const actions: (() => unknown)[][] = [
+const actions: (() => unknown)[/*page*/][/*key*/] = [
   [
     () => sendKeypress(KeyCode.KEY_ENTER),
     () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
@@ -53,7 +53,7 @@ let loading = true;
     await loadingAnimation(deck);
 })();
 
-const images: ImageFrame[][][] = [
+const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
   [
     await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
     await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
@@ -76,7 +76,7 @@ const images: ImageFrame[][][] = [
 loading = false;
 await new Promise(resolve => setTimeout(resolve, 100));
 
-const frames = [
+const frames: number[/*page*/][/*key*/] = [
   [0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0],
