@@ -2,10 +2,20 @@
 import sharp from 'sharp';
 import { openStreamDeck, listStreamDecks } from "@elgato-stream-deck/node";
 import fs from "fs"
+import { fileURLToPath } from 'url';
 import gifFrames from "gif-frames";
+import { crc32 } from 'crc';
+import path from "path";
 
 const ROTATE = 0;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export type ImageFrame = {
+  buffer: Buffer;
+  delay: number;
+};
 
 export async function setup(onKeyPress: (key: number) => void) {
 
@@ -50,6 +60,9 @@ export async function stillPanel(iconPath: string): Promise<Buffer> {
 }
 
 export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<{ buffer: Buffer }[]> {
+  const crc = await getFileCRC32(iconPath);
+  console.log(path.basename(iconPath), 'CRC32:', crc);
+
   const width = 80 * (sizePercentage / 100);
   const icon = await sharp(iconPath)
     .resize(width, width, { fit: 'contain' }) // upper part for the icon
@@ -102,6 +115,12 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
 }
 
 export async function animatedIcon(gifPath: string, label: string = "", sizePercentage: number = 100, cumulative = true) {
+
+  const crc = await getFileCRC32(gifPath);
+  const baseName = path.basename(gifPath);
+  console.log(baseName, 'CRC32:', crc);
+
+
   const width = 80 * (sizePercentage / 100);
 
   const frameData = await gifFrames({ url: gifPath, frames: "all", outputType: "png", cumulative });
@@ -176,6 +195,8 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
     images.push({ buffer: combined, delay: _buffer.delay });
   }
 
+  saveImagesToFile(images, path.join(__dirname, "cache", gifPath));
+
   return images;
 }
 
@@ -205,4 +226,68 @@ export async function pageChange(deck: any, images: any[], currentPage: number) 
   await new Promise(resolve => setTimeout(resolve, 50));
   await deck.fillKeyBuffer(5, images[currentPage][5][0].buffer, { format: 'rgba' });
   await new Promise(resolve => setTimeout(resolve, 50));
+}
+
+export async function loadingAnimation(deck: any) {
+  await deck.fillKeyColor(0, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(1, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(2, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(3, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(4, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(5, 255, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 50));
+
+  await deck.fillKeyColor(0, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(1, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(2, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(3, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(4, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await deck.fillKeyColor(5, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 50));
+}
+
+
+export async function getFileCRC32(filePath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const stream = fs.createReadStream(filePath);
+    let crc = 0;
+
+    stream.on('data', (chunk) => {
+      crc = crc32(chunk, crc);
+    });
+
+    stream.on('end', () => {
+      // Convert to 8-digit hex string
+      resolve(crc.toString(16).padStart(8, '0'));
+    });
+
+    stream.on('error', reject);
+  });
+}
+
+async function saveImagesToFile(images: ImageFrame[], filePath: string) {
+  const encoded = images.map(img => ({
+    delay: img.delay,
+    buffer: img.buffer.toString('base64'),
+  }));
+  await fs.promises.writeFile(filePath, JSON.stringify(encoded));
+}
+
+async function loadImagesFromFile(filePath: string): Promise<ImageFrame[]> {
+  const json = await fs.promises.readFile(filePath, 'utf-8');
+  const parsed = JSON.parse(json) as { delay: number; buffer: string }[];
+  return parsed.map(p => ({
+    delay: p.delay,
+    buffer: Buffer.from(p.buffer, 'base64'),
+  }));
 }
