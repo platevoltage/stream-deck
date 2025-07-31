@@ -61,12 +61,12 @@ export async function stillPanel(iconPath: string): Promise<Buffer> {
 
 export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<ImageFrame[]> {
   const crc = await getFileCRC32(iconPath);
-  console.log(path.basename(iconPath), 'CRC32:', crc);
+  // console.log(path.basename(iconPath), 'CRC32:', crc);
 
   try {
     const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
     if (file) {
-      console.log("found");
+      // console.log("found");
       return file;
     }
   } catch (e) {
@@ -80,21 +80,22 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
     .toBuffer();
 
   const textSvg = `
-    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .label {
-          fill: white;
-          font-size: 14px;
-          font-family: sans-serif;
-          font-weight: 700;
-          dominant-baseline: middle;
-          text-anchor: middle;
-        }
-      </style>
-      <rect width="100%" height="100%" fill="#00000000" />
-      <text x="50%" y="90%" class="label">${label}</text>
-    </svg>
-  `;
+  <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <style>
+      .label {
+        fill: white;
+        font-size: 10px;
+        font-family: sans-serif;
+        font-weight: 700;
+        dominant-baseline: middle;
+        text-anchor: start;
+      }
+    </style>
+    <rect width="100%" height="100%" fill="#00000000" />
+    <text x="5" y="90%" class="label">${label}</text>
+  </svg>
+`;
+
 
   const text = await sharp(Buffer.from(textSvg))
     .resize(80, 80)
@@ -112,7 +113,7 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
     .composite([
       {
         input: icon,
-        top: Math.round((80 - width) / (label.length > 0 ? 3 : 2)),
+        top: Math.round((80 - width) / (label.length > 0 ? 6 : 2)),
         left: Math.round((80 - width) / 2)
       },
       { input: text, top: 0, left: 0 }
@@ -134,7 +135,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
   try {
     const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
     if (file) {
-      console.log("found");
+      // console.log("found");
       return file;
     }
   } catch (e) {
@@ -223,30 +224,30 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
 
 export async function pageChange(deck: any, images: any[], currentPage: number) {
   await deck.fillKeyColor(0, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(1, 255, 255, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(2, 255, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(3, 0, 255, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(4, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(5, 0, 255, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  // await deck.fillKeyColor(0, 0, 0, 0);
+  await new Promise(resolve => setTimeout(resolve, 10));
   await deck.fillKeyBuffer(0, images[currentPage][0][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await deck.fillKeyColor(1, 255, 255, 0);
+  await new Promise(resolve => setTimeout(resolve, 10));
   await deck.fillKeyBuffer(1, images[currentPage][1][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await deck.fillKeyColor(2, 255, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 10));
   await deck.fillKeyBuffer(2, images[currentPage][2][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await deck.fillKeyColor(3, 0, 255, 255);
+  await new Promise(resolve => setTimeout(resolve, 10));
   await deck.fillKeyBuffer(3, images[currentPage][3][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await deck.fillKeyColor(4, 0, 0, 255);
+  await new Promise(resolve => setTimeout(resolve, 10));
   await deck.fillKeyBuffer(4, images[currentPage][4][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await deck.fillKeyColor(5, 0, 255, 0);
+  await new Promise(resolve => setTimeout(resolve, 10));
   await deck.fillKeyBuffer(5, images[currentPage][5][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  // await deck.fillKeyColor(0, 0, 0, 0);
 }
 
 export async function loadingAnimation(deck: any) {

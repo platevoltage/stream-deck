@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation } from "./utils/utils.ts"
 import type { ImageFrame } from "./utils/utils.ts"
 import { sendKeypress, KeyCode } from "./utils/keyboard.ts";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,7 +23,7 @@ const actions: (() => unknown)[/*page*/][/*key*/] = [
     () => sendKeypress(KeyCode.KEY_D),
     async () => {
       if (!pause) {
-        currentPage = 1;
+        currentPage = 2;
         pause = true;
         await pageChange(deck, images, currentPage);
         pause = false;
@@ -124,3 +125,52 @@ for (let i = 0; i < 6; i++) {
   })();
 }
 
+//--------------------------------------
+
+let playlistDirs = await fs.promises.readdir("/Users/garrett/Documents/RetroArch/playlists");
+playlistDirs = playlistDirs.filter((file) => file.endsWith(".lpl"));
+console.log(playlistDirs);
+for (let dir of playlistDirs) {
+  const playlistPath = path.join("/Users/garrett/Documents/RetroArch/playlists", dir);
+  // const playlistFile = await fs.promises.readFile(path.join(__dirname, "stuff", "Nintendo - Nintendo 64.lpl"), { encoding: 'utf8' });
+  const playlistFile = await fs.promises.readFile(playlistPath, { encoding: 'utf8' });
+  const items = JSON.parse(playlistFile).items;
+
+  let newPage: ImageFrame[/*key*/][/*frame*/] = []
+  let newActions: (() => unknown)[/*key*/] = [];
+  for (let item of items) {
+    try {
+      let filePath = path.join("/Users/garrett/Library/Application Support/RetroArch/thumbnails", path.parse(dir).name, "Named_Titles", item.label + ".png")
+      try {
+        const imageFile = await fs.promises.readFile(filePath, { encoding: 'utf8' });
+
+      } catch (e) {
+        filePath = path.join("/Users/garrett/Library/Application Support/RetroArch/thumbnails", path.parse(dir).name, "Named_Boxarts", item.label + ".png")
+        const imageFile = await fs.promises.readFile(filePath, { encoding: 'utf8' }).catch((e) => { throw new Error(e) });
+      }
+      // console.log(item.label);
+      if (newPage.length === 6) {
+        images.push(newPage);
+        actions.push(newActions);
+        frames.push([0, 0, 0, 0, 0, 0])
+        newPage = [];
+        newActions = [];
+      }
+      const nextPage = images.length + 1;
+      newPage.push(await stillIcon(filePath, item.label, 90));
+      newActions.push(async () => {
+        if (!pause) {
+          currentPage = nextPage;
+          pause = true;
+          if (!images[currentPage]) currentPage = 0;
+          await pageChange(deck, images, currentPage);
+          pause = false;
+        }
+      })
+
+
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
