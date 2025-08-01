@@ -48,15 +48,39 @@ export async function setup(onKeyPress: (key: number) => void) {
 }
 
 
-export async function stillPanel(iconPath: string): Promise<Buffer> {
-
+export async function stillPanel(iconPath: string, sizePercentage: number = 100): Promise<Buffer> {
+  const _height = 160 * (sizePercentage / 100);
+  const _width = 240 * (sizePercentage / 100);
   const icon = await sharp(iconPath)
-    .resize(240, 160, { fit: 'contain' }) // upper part for the icon
+    .resize(_height, _width, { fit: 'contain' }) // upper part for the icon
     .removeAlpha() // <-- strips alpha
     .raw()
     .toBuffer();
 
-  return icon
+
+  const combined = await sharp({
+    create: {
+      width: 240,
+      height: 160,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 1 }
+    }
+  }).composite([
+    {
+      input: icon,
+      top: 0,
+      left: 0,
+      raw: {
+        width: _width,
+        height: _height,
+        channels: 4,
+      }
+    }])
+
+    .raw()
+    .toBuffer();
+
+  return combined
 }
 
 export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<ImageFrame[]> {
@@ -80,21 +104,21 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
     .toBuffer();
 
   const textSvg = `
-  <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-    <style>
-      .label {
-        fill: white;
-        font-size: 10px;
-        font-family: sans-serif;
-        font-weight: 700;
-        dominant-baseline: middle;
-        text-anchor: start;
-      }
-    </style>
-    <rect width="100%" height="100%" fill="#00000000" />
-    <text x="5" y="90%" class="label">${label}</text>
-  </svg>
-`;
+    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .label {
+          fill: white;
+          font-size: 14px;
+          font-weight: 700;
+          font-family: sans-serif;
+          dominant-baseline: middle;
+          text-anchor: middle;
+        }
+      </style>
+      <rect width="100%" height="100%" fill="#00000000" />
+      <text x="50%" y="90%" class="label">${label}</text>
+    </svg>
+  `;
 
 
   const text = await sharp(Buffer.from(textSvg))
@@ -223,59 +247,40 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
 }
 
 export async function pageChange(deck: any, images: any[], currentPage: number) {
-  await deck.fillKeyColor(0, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyBuffer(0, images[currentPage][0][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyColor(1, 255, 255, 0);
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyBuffer(1, images[currentPage][1][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyColor(2, 255, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyBuffer(2, images[currentPage][2][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyColor(3, 0, 255, 255);
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyBuffer(3, images[currentPage][3][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyColor(4, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyBuffer(4, images[currentPage][4][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyColor(5, 0, 255, 0);
-  await new Promise(resolve => setTimeout(resolve, 10));
-  await deck.fillKeyBuffer(5, images[currentPage][5][0].buffer, { format: 'rgba' });
-  await new Promise(resolve => setTimeout(resolve, 10));
-  // await deck.fillKeyColor(0, 0, 0, 0);
+  const colors = [[255, 0, 0], [0, 0, 255]];
+  const flip = currentPage % 2 === 1 ? 1 : 0;
+  for (let i = 0; i < 6; i++) {
+    const color = i < 3 ? colors[0 ^ flip] : colors[1 ^ flip];
+    await deck.fillKeyColor(i, ...color);
+    await new Promise(resolve => setTimeout(resolve, 20));
+  }
+  for (let i = 0; i < 6; i++) {
+    const color = i < 3 ? colors[0 ^ flip] : colors[1 ^ flip];
+    await deck.fillKeyColor(i, ...color);
+    await new Promise(resolve => setTimeout(resolve, 20));
+    await deck.fillKeyBuffer(i, images[currentPage][i][0].buffer, { format: 'rgba' });
+    await new Promise(resolve => setTimeout(resolve, 20));
+  }
 }
 
 export async function loadingAnimation(deck: any) {
-  await deck.fillKeyColor(0, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(1, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(2, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(3, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(4, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(5, 255, 0, 0);
-  await new Promise(resolve => setTimeout(resolve, 50));
+  const colors = [[255, 0, 0], [0, 0, 255], [255, 255, 0]];
+  for (const color of colors) {
+    for (let i = 0; i < 6; i++) {
+      await deck.fillKeyColor(i, ...color);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
 
-  await deck.fillKeyColor(0, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(1, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(2, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(3, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(4, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
-  await deck.fillKeyColor(5, 0, 0, 255);
-  await new Promise(resolve => setTimeout(resolve, 50));
+  for (const color of colors) {
+    for (let i = 0; i < 3; i++) {
+      await deck.fillKeyColor(i, ...color);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await deck.fillKeyColor(i + 3, ...color);
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+  }
+
 }
 
 
@@ -318,3 +323,4 @@ async function loadImagesFromFile(filePath: string): Promise<ImageFrame[]> {
     buffer: Buffer.from(p.buffer, 'base64'),
   }));
 }
+

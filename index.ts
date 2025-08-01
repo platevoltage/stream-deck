@@ -10,9 +10,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const { deck } = await setup(onKeyPress);
+deck.setBrightness(60);
 
 let currentPage = 0;
 let pause = false;
+
+let loading = true;
+(async () => {
+  while (loading)
+    await loadingAnimation(deck);
+})();
 
 const actions: (() => unknown)[/*page*/][/*key*/] = [
   [
@@ -21,14 +28,7 @@ const actions: (() => unknown)[/*page*/][/*key*/] = [
     () => sendKeypress(KeyCode.KEY_B),
     () => sendKeypress(KeyCode.KEY_C),
     () => sendKeypress(KeyCode.KEY_D),
-    async () => {
-      if (!pause) {
-        currentPage = 2;
-        pause = true;
-        await pageChange(deck, images, currentPage);
-        pause = false;
-      }
-    }
+    goToNextPage
   ],
   [
     () => sendKeypress(KeyCode.KEY_ENTER),
@@ -36,23 +36,11 @@ const actions: (() => unknown)[/*page*/][/*key*/] = [
     () => sendKeypress(KeyCode.KEY_B),
     () => sendKeypress(KeyCode.KEY_C),
     () => sendKeypress(KeyCode.KEY_D),
-    async () => {
-      if (!pause) {
-        currentPage = 0;
-        pause = true;
-        await pageChange(deck, images, currentPage);
-        pause = false;
-      }
-    }
+    goToNextPage
   ],
 
 ];
 
-let loading = true;
-(async () => {
-  while (loading)
-    await loadingAnimation(deck);
-})();
 
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
   [
@@ -71,18 +59,10 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
     await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
   ],
-
 ];
 
-loading = false;
-await new Promise(resolve => setTimeout(resolve, 100));
-
-const frames: number[/*page*/][/*key*/] = [
-  [0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0],
-  [0, 0, 0, 0, 0, 0],
-];
-
+const frames: number[/*page*/][/*key*/] = [];
+images.forEach(() => frames.push([0, 0, 0, 0, 0, 0]));
 
 
 function onKeyPress(key: number) {
@@ -90,6 +70,8 @@ function onKeyPress(key: number) {
 }
 
 
+loading = false;
+await new Promise(resolve => setTimeout(resolve, 4000));
 
 for (let i = 0; i < 6; i++) {
   (async () => {
@@ -125,52 +107,65 @@ for (let i = 0; i < 6; i++) {
   })();
 }
 
-//--------------------------------------
+// await deck.fillPanelBuffer(await stillPanel(path.resolve(__dirname, "images", `pm.gif`), 100));
 
-let playlistDirs = await fs.promises.readdir("/Users/garrett/Documents/RetroArch/playlists");
-playlistDirs = playlistDirs.filter((file) => file.endsWith(".lpl"));
-console.log(playlistDirs);
-for (let dir of playlistDirs) {
-  const playlistPath = path.join("/Users/garrett/Documents/RetroArch/playlists", dir);
-  // const playlistFile = await fs.promises.readFile(path.join(__dirname, "stuff", "Nintendo - Nintendo 64.lpl"), { encoding: 'utf8' });
-  const playlistFile = await fs.promises.readFile(playlistPath, { encoding: 'utf8' });
-  const items = JSON.parse(playlistFile).items;
-
-  let newPage: ImageFrame[/*key*/][/*frame*/] = []
-  let newActions: (() => unknown)[/*key*/] = [];
-  for (let item of items) {
-    try {
-      let filePath = path.join("/Users/garrett/Library/Application Support/RetroArch/thumbnails", path.parse(dir).name, "Named_Titles", item.label + ".png")
-      try {
-        const imageFile = await fs.promises.readFile(filePath, { encoding: 'utf8' });
-
-      } catch (e) {
-        filePath = path.join("/Users/garrett/Library/Application Support/RetroArch/thumbnails", path.parse(dir).name, "Named_Boxarts", item.label + ".png")
-        const imageFile = await fs.promises.readFile(filePath, { encoding: 'utf8' }).catch((e) => { throw new Error(e) });
-      }
-      // console.log(item.label);
-      if (newPage.length === 6) {
-        images.push(newPage);
-        actions.push(newActions);
-        frames.push([0, 0, 0, 0, 0, 0])
-        newPage = [];
-        newActions = [];
-      }
-      const nextPage = images.length + 1;
-      newPage.push(await stillIcon(filePath, item.label, 90));
-      newActions.push(async () => {
-        if (!pause) {
-          currentPage = nextPage;
-          pause = true;
-          if (!images[currentPage]) currentPage = 0;
-          await pageChange(deck, images, currentPage);
-          pause = false;
-        }
-      })
-
-
-    } catch (e) {
-      console.error(e);
-    }
+async function goToNextPage() {
+  if (!pause) {
+    currentPage++;
+    pause = true;
+    if (!images[currentPage]) currentPage = 0;
+    await pageChange(deck, images, currentPage);
+    pause = false;
   }
 }
+
+//--------------------------------------
+
+// let playlistDirs = await fs.promises.readdir("/Users/garrett/Documents/RetroArch/playlists");
+// playlistDirs = playlistDirs.filter((file) => file.endsWith(".lpl"));
+// console.log(playlistDirs);
+// for (let dir of playlistDirs) {
+//   const playlistPath = path.join("/Users/garrett/Documents/RetroArch/playlists", dir);
+//   // const playlistFile = await fs.promises.readFile(path.join(__dirname, "stuff", "Nintendo - Nintendo 64.lpl"), { encoding: 'utf8' });
+//   const playlistFile = await fs.promises.readFile(playlistPath, { encoding: 'utf8' });
+//   const items = JSON.parse(playlistFile).items;
+
+//   let newPage: ImageFrame[/*key*/][/*frame*/] = []
+//   let newActions: (() => unknown)[/*key*/] = [];
+//   for (let item of items) {
+//     try {
+//       let filePath = path.join("/Users/garrett/Library/Application Support/RetroArch/thumbnails", path.parse(dir).name, "Named_Titles", item.label + ".png")
+//       try {
+//         const imageFile = await fs.promises.readFile(filePath, { encoding: 'utf8' });
+
+//       } catch (e) {
+//         filePath = path.join("/Users/garrett/Library/Application Support/RetroArch/thumbnails", path.parse(dir).name, "Named_Boxarts", item.label + ".png")
+//         const imageFile = await fs.promises.readFile(filePath, { encoding: 'utf8' }).catch((e) => { throw new Error(e) });
+//       }
+//       // console.log(item.label);
+//       if (newPage.length === 6) {
+//         images.push(newPage);
+//         actions.push(newActions);
+//         frames.push([0, 0, 0, 0, 0, 0])
+//         newPage = [];
+//         newActions = [];
+//       }
+//       const nextPage = images.length + 1;
+//       newPage.push(await stillIcon(filePath, item.label, 90));
+//       newActions.push(async () => {
+//         if (!pause) {
+//           currentPage = nextPage;
+//           pause = true;
+//           if (!images[currentPage]) currentPage = 0;
+//           await pageChange(deck, images, currentPage);
+//           pause = false;
+//         }
+//       })
+
+
+//     } catch (e) {
+//       console.error(e);
+//     }
+//   }
+// }
+
