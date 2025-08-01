@@ -38,7 +38,6 @@ const actions: (() => unknown)[/*page*/][/*key*/] = [
     () => sendKeypress(KeyCode.KEY_D),
     goToNextPage
   ],
-
 ];
 
 
