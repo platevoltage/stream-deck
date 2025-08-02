@@ -23,11 +23,11 @@ let loading = true;
 
 const actions: (() => unknown)[/*page*/][/*key*/] = [
   [
-    () => sendKeypress(KeyCode.KEY_ENTER),
-    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_B),
-    () => sendKeypress(KeyCode.KEY_C),
-    () => sendKeypress(KeyCode.KEY_D),
+    () => sendKeypress(KeyCode.KEY_F1, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_H, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_DELETE, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_F2, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_F4, KeyCode.KEY_LEFTSHIFT),
     goToNextPage
   ],
   [
