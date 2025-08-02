@@ -7,11 +7,11 @@ export async function sendKeypress(keyCode: number, modifierCode?: number): Prom
         const inputEvents = `
 E: 0.000000 0004 0004 458792
 ${modifierCode ? `E: 0.000000 0001 ${toHex(modifierCode)} 0001` : ''}
-E: 0.000000 0001 ${toHex(keyCode)} 0001
+E: 0.100000 0001 ${toHex(keyCode)} 0001
 E: 0.000000 0000 0000 0000
-E: 0.100000 0001 ${toHex(keyCode)} 0000
-${modifierCode ? `E: 0.100000 0001 ${toHex(modifierCode)} 0000` : ''}
-E: 0.100000 0000 0000 0000
+E: 0.200000 0001 ${toHex(keyCode)} 0000
+${modifierCode ? `E: 0.200000 0001 ${toHex(modifierCode)} 0000` : ''}
+E: 0.200000 0000 0000 0000
 `;
 
         evemu.stdin.write(inputEvents);
