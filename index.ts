@@ -23,40 +23,40 @@ let loading = true;
 
 const actions: (() => unknown)[/*page*/][/*key*/] = [
   [
-    () => sendKeypress(KeyCode.KEY_F1, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_H, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_DELETE, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_F2, KeyCode.KEY_LEFTSHIFT),
+    goToNextPage,
     () => sendKeypress(KeyCode.KEY_F4, KeyCode.KEY_LEFTSHIFT),
-    goToNextPage
+    () => sendKeypress(KeyCode.KEY_F2, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_DELETE, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_H, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_F1, KeyCode.KEY_LEFTSHIFT),
   ],
   [
-    () => sendKeypress(KeyCode.KEY_ENTER),
-    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_B),
-    () => sendKeypress(KeyCode.KEY_C),
+    goToNextPage,
     () => sendKeypress(KeyCode.KEY_D),
-    goToNextPage
+    () => sendKeypress(KeyCode.KEY_C),
+    () => sendKeypress(KeyCode.KEY_B),
+    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_ENTER),
   ],
 ];
 
 
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
   [
-    await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
-    await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
-    await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-    await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-    await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
     await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+    await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+    await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
+    await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
   ],
   [
-    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-    await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
-    await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
-    await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-    await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
     await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+    await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+    await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
+    await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
   ],
 ];
 

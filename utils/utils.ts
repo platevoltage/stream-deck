@@ -7,7 +7,7 @@ import gifFrames from "gif-frames";
 import { crc32 } from 'crc';
 import path from "path";
 
-const ROTATE = 0;
+const ROTATE = 180;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -231,7 +231,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
       .composite([
         {
           input: image,
-          top: Math.round((80 - width) / (label.length > 0 ? 4 : 2)),
+          top: Math.round((80 - width) / (label.length > 0 ? 2 : 1)),
           left: Math.round((80 - width) / 2)
         },
         { input: text, top: 0, left: 0 }
