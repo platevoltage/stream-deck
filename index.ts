@@ -88,78 +88,39 @@ function onKeyPress(key: number) {
 loading = false;
 await new Promise(resolve => setTimeout(resolve, 4000));
 
-const lastBuffers: (Buffer | null)[] = Array(6).fill(null);
-const nextFrameTime = Array(6).fill(Date.now());
+for (let i = 0; i < 6; i++) {
+  (async () => {
+    while (true) {
+      while (pause) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      const page = currentPage;
+      let _images = images[page][i];
+      let index = frames[page][i];
 
-(async () => {
-  while (true) {
-    while (pause) {
-      await new Promise(r => setTimeout(r, 50));
-    }
-
-    const now = Date.now();
-    const page = currentPage;
-
-    for (let i = 0; i < 6; i++) {
-      const _images = images[page][i];
-      if (!_images) continue;
-
-      if (now >= nextFrameTime[i]) {
-        const index = frames[page][i];
-        const _image = _images[index];
-
-        // Fire with a tiny stagger
-        setTimeout(() => {
-          if (!lastBuffers[i] || !lastBuffers[i].equals(_image.buffer)) {
-            deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' })
-              .catch(console.error);
-            lastBuffers[i] = _image.buffer;
+      if (_images) {
+        try {
+          const _image = _images[index];
+          await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
+          if (_image.delay) {
+            await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
+          } else {
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
-        }, i * 5); // 5ms offset per key
-
-        frames[page][i] = (index + 1) % _images.length;
-        nextFrameTime[i] = now + (_image.delay ? _image.delay * 10 : 100);
+        } catch (e) {
+          console.error(e);
+        }
+        if (index >= _images.length - 1) {
+          frames[page][i] = 0;
+        } else {
+          frames[page][i]++;
+        }
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
-
-    await new Promise(r => setTimeout(r, 5)); // cheap loop tick
-  }
-})();
-
-
-// (async () => {
-//   while (true) {
-//     while (pause) {
-//       await new Promise(resolve => setTimeout(resolve, 100));
-//     }
-//     const page = currentPage;
-//     for (let i = 0; i < 6; i++) {
-//       let _images = images[page][i];
-//       let index = frames[page][i];
-
-//       if (_images) {
-//         try {
-//           const _image = _images[index];
-//           await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
-//           if (_image.delay) {
-//             await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
-//           } else {
-//             await new Promise(resolve => setTimeout(resolve, 100));
-//           }
-//         } catch (e) {
-//           console.error(e);
-//         }
-//         if (index >= _images.length - 1) {
-//           frames[page][i] = 0;
-//         } else {
-//           frames[page][i]++;
-//         }
-//       } else {
-//         await new Promise(resolve => setTimeout(resolve, 100));
-//       }
-//     }
-//   }
-// })();
+  })();
+}
 
 // await deck.fillPanelBuffer(await stillPanel(path.resolve(__dirname, "images", `pm.gif`), 100));
 
