@@ -103,7 +103,7 @@ await new Promise(resolve => setTimeout(resolve, 4000));
       let index = frames[page][keyIndex];
       try {
         const _image = _images[index];
-        await deck.fillKeyBuffer(keyIndex, _image.buffer, { format: 'rgba' });
+        deck.fillKeyBuffer(keyIndex, _image.buffer, { format: 'rgba' });
         delay = _image.delay ? _image.delay * 10 : 100;
 
         frames[page][keyIndex] = (index + 1) % _images.length;
