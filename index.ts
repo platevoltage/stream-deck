@@ -103,7 +103,8 @@ for (let i = 0; i < 6; i++) {
           const _image = _images[index];
           await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
           if (_image.delay) {
-            await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
+            // await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
+            await new Promise(resolve => setTimeout(resolve, 1000));
           } else {
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
