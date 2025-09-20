@@ -38,6 +38,14 @@ const actions: (() => unknown)[/*page*/][/*key*/] = [
     () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
     () => sendKeypress(KeyCode.KEY_ENTER),
   ],
+  [
+    goToNextPage,
+    () => sendKeypress(KeyCode.KEY_D),
+    () => sendKeypress(KeyCode.KEY_C),
+    () => sendKeypress(KeyCode.KEY_B),
+    () => sendKeypress(KeyCode.KEY_A, KeyCode.KEY_LEFTSHIFT),
+    () => sendKeypress(KeyCode.KEY_ENTER),
+  ],
 ];
 
 
@@ -56,6 +64,14 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
     await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
     await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+  ],
+  [
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
     await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
   ],
 ];
