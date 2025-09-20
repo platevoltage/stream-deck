@@ -89,10 +89,9 @@ loading = false;
 await new Promise(resolve => setTimeout(resolve, 4000));
 
 const lastBuffers: (Buffer | null)[] = Array(6).fill(null);
+const nextFrameTime = Array(6).fill(Date.now());
 
 (async () => {
-  const nextFrameTime = Array(6).fill(Date.now());
-
   while (true) {
     while (pause) {
       await new Promise(r => setTimeout(r, 50));
@@ -109,21 +108,21 @@ const lastBuffers: (Buffer | null)[] = Array(6).fill(null);
         const index = frames[page][i];
         const _image = _images[index];
 
-        // Only send if frame changed
-        if (!lastBuffers[i] || !lastBuffers[i].equals(_image.buffer)) {
-          deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' })
-            .catch(console.error); // fire-and-forget
-          lastBuffers[i] = _image.buffer;
-        }
+        // Fire with a tiny stagger
+        setTimeout(() => {
+          if (!lastBuffers[i] || !lastBuffers[i].equals(_image.buffer)) {
+            deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' })
+              .catch(console.error);
+            lastBuffers[i] = _image.buffer;
+          }
+        }, i * 5); // 5ms offset per key
 
         frames[page][i] = (index + 1) % _images.length;
-
-        // Schedule next frame for this key
         nextFrameTime[i] = now + (_image.delay ? _image.delay * 10 : 100);
       }
     }
 
-    await new Promise(r => setTimeout(r, 5)); // small tick
+    await new Promise(r => setTimeout(r, 5)); // cheap loop tick
   }
 })();
 
