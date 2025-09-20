@@ -88,36 +88,45 @@ function onKeyPress(key: number) {
 loading = false;
 await new Promise(resolve => setTimeout(resolve, 4000));
 
+const lastBuffers: (Buffer | null)[] = Array(6).fill(null);
+
 (async () => {
-  let keyIndex = 0;
+  const nextFrameTime = Array(6).fill(Date.now());
+
   while (true) {
     while (pause) {
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 50));
     }
 
+    const now = Date.now();
     const page = currentPage;
-    const _images = images[page][keyIndex];
-    let delay = 100;
 
-    if (_images) {
-      let index = frames[page][keyIndex];
-      try {
+    for (let i = 0; i < 6; i++) {
+      const _images = images[page][i];
+      if (!_images) continue;
+
+      if (now >= nextFrameTime[i]) {
+        const index = frames[page][i];
         const _image = _images[index];
-        deck.fillKeyBuffer(keyIndex, _image.buffer, { format: 'rgba' });
-        delay = _image.delay ? _image.delay * 10 : 100;
 
-        frames[page][keyIndex] = (index + 1) % _images.length;
-      } catch (e) {
-        console.error(e);
+        // Only send if frame changed
+        if (!lastBuffers[i] || !lastBuffers[i].equals(_image.buffer)) {
+          deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' })
+            .catch(console.error); // fire-and-forget
+          lastBuffers[i] = _image.buffer;
+        }
+
+        frames[page][i] = (index + 1) % _images.length;
+
+        // Schedule next frame for this key
+        nextFrameTime[i] = now + (_image.delay ? _image.delay * 10 : 100);
       }
     }
 
-    // advance to next key
-    keyIndex = (keyIndex + 1) % 6;
-
-    await new Promise(r => setTimeout(r, delay));
+    await new Promise(r => setTimeout(r, 5)); // small tick
   }
 })();
+
 
 // (async () => {
 //   while (true) {
