@@ -88,13 +88,13 @@ function onKeyPress(key: number) {
 loading = false;
 await new Promise(resolve => setTimeout(resolve, 4000));
 
-for (let i = 0; i < 6; i++) {
-  (async () => {
-    while (true) {
-      while (pause) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-      const page = currentPage;
+(async () => {
+  while (true) {
+    while (pause) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    const page = currentPage;
+    for (let i = 0; i < 6; i++) {
       let _images = images[page][i];
       let index = frames[page][i];
 
@@ -103,10 +103,9 @@ for (let i = 0; i < 6; i++) {
           const _image = _images[index];
           await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
           if (_image.delay) {
-            // await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
-            await new Promise(resolve => setTimeout(resolve, 100000));
+            await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
           } else {
-            await new Promise(resolve => setTimeout(resolve, 100000));
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
         } catch (e) {
           console.error(e);
@@ -120,8 +119,8 @@ for (let i = 0; i < 6; i++) {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
-  })();
-}
+  }
+})();
 
 // await deck.fillPanelBuffer(await stillPanel(path.resolve(__dirname, "images", `pm.gif`), 100));
 
