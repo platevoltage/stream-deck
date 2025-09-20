@@ -105,7 +105,7 @@ for (let i = 0; i < 6; i++) {
           if (_image.delay) {
             await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
           } else {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 1000));
           }
         } catch (e) {
           console.error(e);
