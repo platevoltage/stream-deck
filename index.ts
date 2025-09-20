@@ -104,9 +104,9 @@ for (let i = 0; i < 6; i++) {
           await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
           if (_image.delay) {
             // await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 100000));
           } else {
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 100000));
           }
         } catch (e) {
           console.error(e);
