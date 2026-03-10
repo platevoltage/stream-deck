@@ -1,16 +1,28 @@
 
 import path from "path";
 import { fileURLToPath } from 'url';
-import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation } from "./utils/utils.ts"
+import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay } from "./utils/utils.ts"
 import type { ImageFrame } from "./utils/utils.ts"
 import { sendKeypress, KeyCode } from "./utils/keyboard.ts";
 import fs from "fs";
+import { char, echo, KEY, sendByte, sendCommand } from "./utils/linux.ts";
+import type { StreamDeck } from "@elgato-stream-deck/node";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const { deck } = await setup(onKeyPress);
-deck.setBrightness(60);
+let deck: StreamDeck | null = null;
+while (!deck) {
+  try {
+    deck = (await setup(onKeyPress)).deck;
+    console.log(deck);
+    deck.setBrightness(60);
+  } catch (e) {
+    console.error(e);
+    await delay(5000);
+  }
+
+}
 
 let currentPage = 0;
 let pause = false;
@@ -24,11 +36,11 @@ let loading = true;
 const actions: (() => unknown)[/*page*/][/*key*/] = [
   [
     goToNextPage,
-    () => sendKeypress(KeyCode.KEY_F4, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_F2, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_DELETE, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_H, KeyCode.KEY_LEFTSHIFT),
-    () => sendKeypress(KeyCode.KEY_F1, KeyCode.KEY_LEFTSHIFT),
+    () => sendByte(KEY.F4), //F4
+    () => sendByte(KEY.F3), //F3
+    () => sendCommand("batocera-es-swissknife --emukill"),
+    () => sendByte(char("h")),
+    () => sendByte(KEY.F1),
   ],
   [
     goToNextPage,
@@ -98,7 +110,7 @@ for (let i = 0; i < 6; i++) {
       let _images = images[page][i];
       let index = frames[page][i];
 
-      if (_images) {
+      if (_images && deck) {
         try {
           const _image = _images[index];
           await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });

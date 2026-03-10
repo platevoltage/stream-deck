@@ -17,6 +17,10 @@ export type ImageFrame = {
   delay?: number;
 };
 
+export async function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export async function setup(onKeyPress: (key: number) => void) {
 
   // List the connected streamdecks
@@ -31,6 +35,7 @@ export async function setup(onKeyPress: (key: number) => void) {
 
   deck.on("error", (error) => {
     console.error(error);
+    throw (error);
   });
 
   deck.on("up", (key) => {
@@ -175,12 +180,12 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
 
 
   const buffers = await Promise.all(
-    frameData.map(async (frame) => {
+    frameData.map(async (frame: any) => {
       const chunks: Buffer[] = [];
 
       return new Promise<ImageFrame>((resolve, reject) => {
         frame.getImage()
-          .on("data", chunk => chunks.push(chunk))
+          .on("data", (chunk: any) => chunks.push(chunk))
           .on("end", () => {
             const pngBuffer = Buffer.concat(chunks);
             resolve({ buffer: pngBuffer, delay: frame.frameInfo.delay }); // This is a valid PNG now
