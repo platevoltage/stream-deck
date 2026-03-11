@@ -7,9 +7,13 @@ import { sendKeypress, KeyCode } from "./utils/keyboard.ts";
 import fs from "fs";
 import { char, echo, KEY, sendByte, sendCommand } from "./utils/linux.ts";
 import type { StreamDeck } from "@elgato-stream-deck/node";
+import { startServer } from "./utils/server.ts";
+import { openSerialPort } from "./utils/serial.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+startServer();
 
 let deck: StreamDeck | null = null;
 while (!deck) {

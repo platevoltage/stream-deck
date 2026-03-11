@@ -3,17 +3,19 @@ import cors from 'cors';
 import path from 'path';
 import http from 'http';
 import fs from 'fs';
+import { openSerialPort } from './serial.ts';
 // import privateKey from '../cert/server.key';
 // import certificate from '../cert/server.crt';
+export function startServer() {
+    const port = openSerialPort();
+    const app = express();
+    app.use(express.json());
+    app.use(cors());
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-// Root route response with a cartoon-styled HTML
-app.get('/', (req: express.Request, res: express.Response) => {
-    const currentTime = new Date().toLocaleString();
-    const html = `
+    // Root route response with a cartoon-styled HTML
+    app.get('/', (req: express.Request, res: express.Response) => {
+        const currentTime = new Date().toLocaleString();
+        const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,47 +44,66 @@ app.get('/', (req: express.Request, res: express.Response) => {
 </body>
 </html>
 `;
-    res.status(200).send(html);
-});
+        res.status(200).send(html);
+    });
 
-// JSON response with more detailed output
-app.get('/json', (req: express.Request, res: express.Response) => {
-    const currentTime = new Date().toLocaleString();
-    const data: { message: string; time: string } = {
-        message: 'Hello World!',
-        time: `Current Time: ${currentTime}`,
-    };
-    res.status(200).json(data);
-});
+    // JSON response with more detailed output
+    app.get('/json', (req: express.Request, res: express.Response) => {
+        const currentTime = new Date().toLocaleString();
+        const data: { message: string; time: string } = {
+            message: 'Hello World!',
+            time: `Current Time: ${currentTime}`,
+        };
+        res.status(200).json(data);
+    });
 
-// YAML response with more detailed output
-app.get('/yaml', (req: express.Request, res: express.Response) => {
-    const currentTime = new Date().toLocaleString();
-    const data: string = `message: Hello World!
+    // YAML response with more detailed output
+    app.get('/yaml', (req: express.Request, res: express.Response) => {
+        const currentTime = new Date().toLocaleString();
+        const data: string = `message: Hello World!
 time: ${currentTime}`;
-    res.status(200).set('Content-Type', 'application/yaml').send(data);
-});
+        res.status(200).set('Content-Type', 'application/yaml').send(data);
+    });
 
-// Image serving with more detailed output
-// const __filename = path.resolve(import.meta.url);
-// const imagePath = path.join(__dirname, 'images', 'mario.jpg');
-// app.get('/mario-image', (req: express.Request, res: express.Response) => {
-//     fs.readFile(imagePath, (err, data) => {
-//         if (err) {
-//             console.error(`Error reading ${imagePath}:`, err);
-//             res.status(500).send('Error serving image.');
-//         } else {
-//             res.status(200).send(data);
-//         }
-//     });
-// });
+    app.post('/button-lights', (req: express.Request, res: express.Response) => {
+        const body = req.body;
+        console.log(body);
 
-// const options = {
-//     key: privateKey,
-//     cert: certificate,
-// };
+        if ("buttons" in body) {
+            const buttonColors: string[] = body.buttons;
+            const buttonColorsInt = buttonColors.map(color => parseInt("0x" + color), 16);
+            console.log(buttonColorsInt.map(color => color.toString(16)));
 
-const server = http.createServer(app);
-server.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 3000} (HTTPS)`);
-});
+        } else {
+            console.log("NOPE")
+        }
+        res.status(200).json({
+            status: "success"
+        });
+    });
+
+    // Image serving with more detailed output
+    // const __filename = path.resolve(import.meta.url);
+    // const imagePath = path.join(__dirname, 'images', 'mario.jpg');
+    // app.get('/mario-image', (req: express.Request, res: express.Response) => {
+    //     fs.readFile(imagePath, (err, data) => {
+    //         if (err) {
+    //             console.error(`Error reading ${imagePath}:`, err);
+    //             res.status(500).send('Error serving image.');
+    //         } else {
+    //             res.status(200).send(data);
+    //         }
+    //     });
+    // });
+
+    // const options = {
+    //     key: privateKey,
+    //     cert: certificate,
+    // };
+
+
+    const server = http.createServer(app);
+    server.listen(process.env.PORT || 3000, () => {
+        console.log(`Server is running on port ${process.env.PORT || 3000} (HTTPS)`);
+    });
+}
