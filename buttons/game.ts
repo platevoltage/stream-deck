@@ -1,4 +1,8 @@
-const colors: { [key: string]: string[] } = {
+const colors: {
+    [key: string]:
+    [string, string, string, string, string, string, string, string, string, string] |
+    [string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string]
+} = {
     mslug6: ["FFFF00", "00FF00", "0000FF", "8800FF", "FF0000", "000000", "000000", "000000", "333333", "333333"],
     mk: ["000000", "FF0000", "000000", "0000FF", "000000", "FF0000", "333333", "0000FF", "333333", "333333"],
     mk2: ["000000", "FF0000", "000000", "0000FF", "000000", "FF0000", "333333", "0000FF", "333333", "333333"],
