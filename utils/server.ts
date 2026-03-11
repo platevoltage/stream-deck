@@ -3,7 +3,10 @@ import cors from 'cors';
 import path from 'path';
 import http from 'http';
 import fs from 'fs';
-import { openSerialPort } from './serial.ts';
+import { openSerialPort, sendButtonColors } from './serial.ts';
+import systemColors from "../buttons/system.ts";
+import gameColors from "../buttons/game.ts";
+import defaultColors from "../buttons/default.ts";
 // import privateKey from '../cert/server.key';
 // import certificate from '../cert/server.crt';
 export function startServer() {
@@ -69,14 +72,46 @@ time: ${currentTime}`;
         const body = req.body;
         console.log(body);
 
-        if ("buttons" in body) {
-            const buttonColors: string[] = body.buttons;
-            const buttonColorsInt = buttonColors.map(color => parseInt("0x" + color), 16);
-            console.log(buttonColorsInt.map(color => color.toString(16)));
+        if ("event" in body) {
+            switch (body.event) {
+                case "gameStart": {
+                    if ("rom" in body) {
+                        const rom = body.rom;
+                        const game = path.basename(rom, path.extname(rom));
+                        if (game in gameColors) {
+                            console.log("GameColors:", gameColors[game])
+                            sendButtonColors(port, gameColors[game]);
+                        }
+                        break;
+                    }
+                    if ("system" in body) {
+                        const system = body.system;
+                        if (system in systemColors) {
+                            console.log("SystemColors:", systemColors[system])
+                            sendButtonColors(port, systemColors[system]);
+                        }
+                        break;
+                    }
+                    break;
 
-        } else {
-            console.log("NOPE")
+                }
+                case "gameStop": {
+                    sendButtonColors(port, defaultColors);
+                    break;
+                }
+
+            }
         }
+
+        // if ("buttons" in body) {
+        //     const buttonColors: string[] = body.buttons;
+        //     // const buttonColorsInt = buttonColors.map(color => parseInt("0x" + color), 16);
+        //     // console.log(buttonColorsInt.map(color => color.toString(16)));
+        //     sendButtonColors(port, buttonColors);
+
+        // } else {
+        //     console.log("NOPE")
+        // }
         res.status(200).json({
             status: "success"
         });
