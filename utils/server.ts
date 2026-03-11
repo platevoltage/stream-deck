@@ -68,9 +68,16 @@ time: ${currentTime}`;
         res.status(200).set('Content-Type', 'application/yaml').send(data);
     });
 
+    type ButtonBody = {
+        event: "gameStart" | "gameStop",
+        system: string, // ie: 'fbneo'
+        rom: string // ie: '/userdata/roms/fbneo/mk2.7z'
+    }
+
     app.post('/button-lights', (req: express.Request, res: express.Response) => {
-        const body = req.body;
+        const body: ButtonBody = req.body;
         console.log(body);
+
 
         if ("event" in body) {
             switch (body.event) {
@@ -81,16 +88,16 @@ time: ${currentTime}`;
                         if (game in gameColors) {
                             console.log("GameColors:", gameColors[game])
                             sendButtonColors(port, gameColors[game]);
+                            break;
                         }
-                        break;
                     }
                     if ("system" in body) {
                         const system = body.system;
                         if (system in systemColors) {
                             console.log("SystemColors:", systemColors[system])
                             sendButtonColors(port, systemColors[system]);
+                            break;
                         }
-                        break;
                     }
                     break;
 
