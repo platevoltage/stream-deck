@@ -4,6 +4,7 @@ const colors: {
     [string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string]
 } = {
     snes: ["FF55FF", "FF55FF", "333333", "333333", "2200AA", "2200AA", "000000", "000000", "111111", "111111"],
+    psx: ["b62bb6", "0ef1b5", "333333", "333333", "003caa", "ff0e01", "333333", "333333", "111111", "111111"],
     flycast: ["FFFF00", "00FF00", "0000FF", "000000", "FF0000", "000000", "000000", "000000", "333333", "333333"],
     megadrive: ["555555", "555555", "555555", "000000", "AA0000", "AA0000", "AA0000", "000000", "000000", "333333"],
     n64: ["00FF00", "FF5500", "FF5500", "555555", "0000FF", "FF5500", "FF5500", "555555", "333333", "330000"],
