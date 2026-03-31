@@ -9,17 +9,29 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.join(path.dirname(__filename), "..");
 
+export const pageNames = {
+    EMULATION_STATION: 0,
+    GAME_COMMON: 1,
+}
 
+/* [
+  bottom right,
+  bottom middle,
+  bottom left,
+  top right,
+  top middle,
+  top left
+] */
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
-    [
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    [ // EMULATION_STATION
+        await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+        await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
+        await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
+        await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
     ],
-    [
+    [   // GAME_COMMON
         await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
@@ -69,7 +81,7 @@ let pause = false;
 let loading = true;
 let deck: StreamDeck | null = null;
 
-export async function startStreamDeck(NUM_KEYS: number) {
+export async function start(NUM_KEYS: number) {
     while (!deck) {
         try {
             deck = (await setup(onKeyPress)).deck;

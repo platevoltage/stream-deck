@@ -6,6 +6,7 @@ import { openSerialPort, sendButtonColors } from './serial.ts';
 import systemColors from "../buttons/system.ts";
 import gameColors from "../buttons/game.ts";
 import defaultColors from "../buttons/default.ts";
+import * as streamDeck from './stream-deck.ts';
 
 
 type ButtonBody = {
@@ -14,7 +15,7 @@ type ButtonBody = {
     rom: string // ie: '/userdata/roms/fbneo/mk2.7z'
 }
 
-export function startServer() {
+export function start() {
     const port = openSerialPort();
     const app = express();
     app.use(express.json());
@@ -30,11 +31,12 @@ export function startServer() {
         if ("event" in body) {
             switch (body.event) {
                 case "gameStart": {
+                    streamDeck.goToPage(streamDeck.pageNames.GAME_COMMON);
                     if ("rom" in body) {
                         const rom = body.rom;
                         const game = path.basename(rom, path.extname(rom));
                         if (game in gameColors) {
-                            console.log("GameColors:", gameColors[game])
+                            console.log("GameColors:", gameColors[game]);
                             sendButtonColors(port, gameColors[game]);
                             break;
                         }
@@ -42,7 +44,7 @@ export function startServer() {
                     if ("system" in body) {
                         const system = body.system;
                         if (system in systemColors) {
-                            console.log("SystemColors:", systemColors[system])
+                            console.log("SystemColors:", systemColors[system]);
                             sendButtonColors(port, systemColors[system]);
                             break;
                         }
@@ -52,6 +54,7 @@ export function startServer() {
                 }
                 case "gameStop": {
                     sendButtonColors(port, defaultColors);
+                    streamDeck.goToPage(streamDeck.pageNames.EMULATION_STATION);
                     break;
                 }
 
