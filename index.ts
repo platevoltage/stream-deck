@@ -8,10 +8,10 @@ import fs from "fs";
 import { char, echo, KEY, sendByte, sendCommand } from "./utils/linux.ts";
 import type { StreamDeck } from "@elgato-stream-deck/node";
 import { startServer } from "./utils/server.ts";
-import { openSerialPort } from "./utils/serial.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const NUM_KEYS = 6;
 
 startServer();
 
@@ -40,8 +40,8 @@ let loading = true;
 const actions: (() => unknown)[/*page*/][/*key*/] = [
   [
     goToNextPage,
-    () => sendByte(KEY.F4), //F4
-    () => sendByte(KEY.F3), //F3
+    () => sendByte(KEY.F4),
+    () => sendByte(KEY.F3),
     () => sendCommand("batocera-es-swissknife --emukill"),
     () => sendByte(char("h")),
     () => sendByte(KEY.F1),
@@ -93,7 +93,8 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
 ];
 
 const frames: number[/*page*/][/*key*/] = [];
-images.forEach(() => frames.push([0, 0, 0, 0, 0, 0]));
+const keys = new Array(NUM_KEYS).fill(0);
+images.forEach(() => frames.push([...keys]));
 
 
 function onKeyPress(key: number) {
@@ -104,7 +105,7 @@ function onKeyPress(key: number) {
 loading = false;
 await new Promise(resolve => setTimeout(resolve, 4000));
 
-for (let i = 0; i < 6; i++) {
+for (let i = 0; i < NUM_KEYS; i++) {
   (async () => {
     while (true) {
       while (pause) {
@@ -118,11 +119,10 @@ for (let i = 0; i < 6; i++) {
         try {
           const _image = _images[index];
           await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
-          if (_image.delay) {
-            await new Promise(resolve => setTimeout(resolve, _image.delay! * 10));
-          } else {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
+
+          //Frame delay. If there is no delay property, delay defaults to 100 ms.
+          await new Promise(resolve => setTimeout(resolve, (_image.delay || 10) * 10));
+
         } catch (e) {
           console.error(e);
         }
@@ -149,6 +149,8 @@ async function goToNextPage() {
     pause = false;
   }
 }
+
+
 
 //--------------------------------------
 

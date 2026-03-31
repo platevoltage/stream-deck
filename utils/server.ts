@@ -15,6 +15,8 @@ export function startServer() {
     app.use(express.json());
     app.use(cors());
 
+
+    sendButtonColors(port, defaultColors);
     // Root route response with a cartoon-styled HTML
     app.get('/', (req: express.Request, res: express.Response) => {
         const currentTime = new Date().toLocaleString();

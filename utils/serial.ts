@@ -107,8 +107,7 @@ export async function sendButtonColors(port: SerialPort, colors: string[]) {
     const p2StartSelect = colors.slice(18, 20);
     // const p2StartSelect = ["FFFFFF", "FFFFFF"];
     const myRun = ++runId;
-    // while (true) {
-    //     if (myRun !== runId) return;
+
     for (let i = -2; i < 24; i++) {
 
         player1Top[i] = colors.slice(0, 4)[i];
@@ -137,6 +136,9 @@ export async function sendButtonColors(port: SerialPort, colors: string[]) {
         await new Promise(resolve => setTimeout(resolve, 50));
     }
     await new Promise(resolve => setTimeout(resolve, 500));
+
+    // while (true) {
+    //     if (myRun !== runId) return;
     // }
 
 }
