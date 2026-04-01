@@ -2,11 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import http from 'http';
-import { openSerialPort, sendButtonColors } from './serial.ts';
+import { openSerialPort } from './serial.ts';
 import systemColors from "../buttons/system.ts";
 import gameColors from "../buttons/game.ts";
 import defaultColors from "../buttons/default.ts";
 import * as streamDeck from './stream-deck.ts';
+import { sendButtonColors } from './buttons.ts';
 
 
 type ButtonBody = {

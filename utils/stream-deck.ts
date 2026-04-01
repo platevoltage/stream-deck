@@ -2,7 +2,6 @@ import path from "path";
 import type { StreamDeck } from "@elgato-stream-deck/node";
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon } from "./utils.ts"
 import type { ImageFrame } from "./utils.ts"
-import { sendKeypress, KeyCode } from "./keyboard.ts";
 import { char, echo, KEY, sendByte, sendCommand } from "./linux.ts";
 import { fileURLToPath } from 'url';
 
@@ -123,13 +122,12 @@ export async function start(NUM_KEYS: number) {
 
 
     loading = false;
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
+    await delay(4000);
     for (let i = 0; i < NUM_KEYS; i++) {
         (async () => {
             while (true) {
                 while (pause) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await delay(100);
                 }
                 const page = currentPage;
                 let _images = images[page][i];
@@ -141,7 +139,7 @@ export async function start(NUM_KEYS: number) {
                         await deck.fillKeyBuffer(i, _image.buffer, { format: 'rgba' });
 
                         //Frame delay. If there is no delay property, delay defaults to 100 ms.
-                        await new Promise(resolve => setTimeout(resolve, (_image.delay || 10) * 10));
+                        await delay((_image.delay || 10) * 10);
 
                     } catch (e) {
                         console.error(e);
@@ -152,7 +150,7 @@ export async function start(NUM_KEYS: number) {
                         frames[page][i]++;
                     }
                 } else {
-                    await new Promise(resolve => setTimeout(resolve, 100));
+                    await delay(100);
                 }
             }
         })();

@@ -3,9 +3,11 @@ import sharp from 'sharp';
 import { openStreamDeck, listStreamDecks } from "@elgato-stream-deck/node";
 import fs from "fs"
 import { fileURLToPath } from 'url';
+/* @ts-ignore */
 import gifFrames from "gif-frames";
 import { crc32 } from 'crc';
 import path from "path";
+import { sendButtonColors } from './buttons';
 
 const ROTATE = 180;
 
@@ -305,9 +307,9 @@ export async function pageChange(deck: any, images: any[], currentPage: number) 
   for (let i = 0; i < 6; i++) {
     const color = i < 3 ? colors[0 ^ flip] : colors[1 ^ flip];
     await deck.fillKeyColor(i, ...color);
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await delay(20);
     await deck.fillKeyBuffer(i, images[currentPage][i][0].buffer, { format: 'rgba' });
-    await new Promise(resolve => setTimeout(resolve, 20));
+    await delay(20);
   }
 }
 
@@ -316,16 +318,16 @@ export async function loadingAnimation(deck: any) {
   for (const color of colors) {
     for (let i = 0; i < 6; i++) {
       await deck.fillKeyColor(i, ...color);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await delay(100);
     }
   }
 
   for (const color of colors) {
     for (let i = 0; i < 3; i++) {
       await deck.fillKeyColor(i, ...color);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await delay(100);
       await deck.fillKeyColor(i + 3, ...color);
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await delay(100);
     }
   }
 }
@@ -371,3 +373,67 @@ async function loadImagesFromFile(filePath: string): Promise<ImageFrame[]> {
   }));
 }
 
+async function demo(port: any) {
+  // const colors = ["FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000", "FF0000"];
+  const colors = ["000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000", "000000"];
+  const player1Top = ["FF0000", "FF0000", "FF0000", "FF0000"];
+  const player1Bottom = ["FF0000", "FF0000", "FF0000", "FF0000"];
+  const p1StartSelect = ["FFFFFF", "FFFFFF"];
+  const player2Top = ["0000FF", "0000FF", "0000FF", "0000FF"];
+  const player2Bottom = ["0000FF", "0000FF", "0000FF", "0000FF"];
+  const p2StartSelect = ["FFFFFF", "FFFFFF"];
+  await delay(1000);
+  sendButtonColors(port, colors);
+  await delay(100);
+  // while (1) {
+  // for (let i = 0; i < 48; i++) {
+  //     if (i >= 0 && i < 16)
+  //         colors.unshift("0000FF");
+  //     if (i >= 16 && i < 32)
+  //         colors.unshift("FFFF00");
+  //     if (i >= 32 && i < 48)
+  //         colors.unshift("FF0000");
+  //     colors.pop();
+
+  //     const finalColors = [...colors];
+  //     finalColors.splice(8, 0, "FFFFFF", "FFFFFF");
+  //     finalColors.splice(18, 0, "FFFFFF", "FFFFFF");
+  //     sendButtonColors(port, finalColors);
+  //     console.log(finalColors);
+  //     await new Promise(resolve => setTimeout(resolve, 20));
+  // }
+  // }
+  let swap = false;
+  while (1) {
+    const color1 = swap ? ["FF00F0", "FF0000", "FF0000", "FF0000", "FF00F0", "FF0000", "FF0000", "FF0000"] : ["FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00"];
+    const color2 = swap ? ["0000FF", "0000FF", "0000FF", "0000FF", "0000FF", "0000FF", "0000FF", "0000FF"] : ["FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00", "FFFF00"];
+    for (let i = -2; i < 24; i++) {
+
+      player1Top[i] = color1[i];
+      player1Bottom[i - 1] = color1[i - 1];
+      player2Top[i - 14] = color2[i - 14];
+      player2Bottom[i - 15] = color2[i - 15];
+
+      const _player1Top = [...player1Top];
+      const _player1Bottom = [...player1Bottom];
+      const _player2Top = [...player2Top];
+      const _player2Bottom = [...player2Bottom];
+      _player1Top[i + 1] = "FFFFFF";
+      _player1Bottom[i] = "FFFFFF";
+      _player1Top[i + 2] = "FFFFFF";
+      _player1Bottom[i + 1] = "FFFFFF";
+
+      _player2Top[i - 13] = "FFFFFF";
+      _player2Bottom[i - 14] = "FFFFFF";
+      _player2Top[i - 12] = "FFFFFF";
+      _player2Bottom[i - 13] = "FFFFFF";
+
+      const finalColors = [..._player1Top.slice(0, 4), ..._player1Bottom.slice(0, 4), ...p1StartSelect, ..._player2Top.slice(0, 4), ..._player2Bottom.slice(0, 4), ...p2StartSelect];
+      sendButtonColors(port, finalColors);
+      await delay(500);
+    }
+    await delay(2000);
+    swap = !swap;
+  }
+
+}
