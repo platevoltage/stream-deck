@@ -25,12 +25,18 @@ export const pageNames = {
 ] */
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     [ // EMULATION_STATION
-        await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "More...", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `metal-slug.gif`), "Volume +", 100, false),
-        await animatedIcon(path.resolve(__dirname, "images", `metalslug-zombie.gif`), "Volume -", 100, false),
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-blue.gif`), "More...", 70),
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-push.gif`), "Volume +", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-ty.gif`), "Volume -", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "Exit Game", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
         await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
+        // await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "More...", 70, false),
+        // await animatedIcon(path.resolve(__dirname, "images", `metal-slug.gif`), "Volume +", 100, false),
+        // await animatedIcon(path.resolve(__dirname, "images", `metalslug-zombie.gif`), "Volume -", 100, false),
+        // await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "Exit Game", 70, false),
+        // await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
+        // await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
     ],
     [   // GAME_COMMON
         await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
