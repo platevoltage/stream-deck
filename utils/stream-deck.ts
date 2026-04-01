@@ -1,6 +1,6 @@
 import path from "path";
 import type { StreamDeck } from "@elgato-stream-deck/node";
-import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay } from "./utils.ts"
+import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon } from "./utils.ts"
 import type { ImageFrame } from "./utils.ts"
 import { sendKeypress, KeyCode } from "./keyboard.ts";
 import { char, echo, KEY, sendByte, sendCommand } from "./linux.ts";
@@ -12,6 +12,7 @@ const __dirname = path.join(path.dirname(__filename), "..");
 export const pageNames = {
     EMULATION_STATION: 0,
     GAME_COMMON: 1,
+    EXIT_CONFIRM: 2
 }
 
 /* [
@@ -24,12 +25,12 @@ export const pageNames = {
 ] */
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     [ // EMULATION_STATION
-        await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-        await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-        await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
-        await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+        await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "More...", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `metal-slug.gif`), "Volume +", 100, false),
+        await animatedIcon(path.resolve(__dirname, "images", `metalslug-zombie.gif`), "Volume -", 100, false),
+        await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "Exit Game", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
+        await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
     ],
     [   // GAME_COMMON
         await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
@@ -39,22 +40,30 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
         await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
         await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
     ],
-    [
-        await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-        await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
-        await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
-        await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-    ],
+    [ // EXIT_CONFIRM
+        await solidColorIcon([0, 100, 0], "Yes"),
+        await solidColorIcon([0, 0, 140]),
+        await solidColorIcon([100, 0, 0], "No"),
+        await solidColorIcon([0, 0, 140], "Sure?"),
+        await solidColorIcon([0, 0, 140], "You"),
+        await solidColorIcon([0, 0, 140], "Are"),
+    ]
+    // [
+    //     await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+    //     await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
+    //     await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
+    //     await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
+    //     await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
+    //     await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
+    // ],
 ];
 
 const actions: (() => unknown)[/*page*/][/*key*/] = [
     [
         goToNextPage,
-        () => sendByte(KEY.F4),
+        () => sendCommand("batocera-audio setSystemVolume +5"),
+        () => sendCommand("batocera-audio setSystemVolume -5"),
         () => sendByte(KEY.F3),
-        () => sendCommand("batocera-es-swissknife --emukill"),
         () => sendByte(char("h")),
         () => sendByte(KEY.F1),
     ],
@@ -62,17 +71,17 @@ const actions: (() => unknown)[/*page*/][/*key*/] = [
         goToNextPage,
         () => sendByte(KEY.F4),
         () => sendByte(KEY.F3),
-        () => sendCommand("batocera-es-swissknife --emukill"),
+        () => goToPage(pageNames.EXIT_CONFIRM),
         () => sendByte(char("h")),
         () => sendByte(KEY.F1),
     ],
     [
-        goToNextPage,
-        () => sendByte(KEY.F4),
-        () => sendByte(KEY.F3),
         () => sendCommand("batocera-es-swissknife --emukill"),
-        () => sendByte(char("h")),
-        () => sendByte(KEY.F1),
+        () => null,
+        () => goToPage(pageNames.GAME_COMMON),
+        () => null,
+        () => null,
+        () => null,
     ],
 ];
 

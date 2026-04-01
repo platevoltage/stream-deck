@@ -52,6 +52,49 @@ export async function setup(onKeyPress: (key: number) => void) {
   return { deck, pressedKeys };
 }
 
+export async function solidColorIcon(color: [number, number, number], label: string = ""): Promise<ImageFrame[]> {
+  const textSvg = `
+    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .label {
+          fill: white;
+          font-size: 14px;
+          font-weight: 700;
+          font-family: sans-serif;
+          dominant-baseline: middle;
+          text-anchor: middle;
+        }
+      </style>
+      <rect width="100%" height="100%" fill="#00000000" />
+      <text x="50%" y="90%" class="label">${label}</text>
+    </svg>
+  `;
+
+
+  const text = await sharp(Buffer.from(textSvg))
+    .resize(80, 80)
+    .rotate(ROTATE)
+    .toBuffer();
+
+
+  const combined = await sharp({
+    create: {
+      width: 80,
+      height: 80,
+      channels: 4,
+      background: { r: color[0], g: color[1], b: color[2], alpha: 1 }
+    }
+  })
+    .composite([
+      { input: text, top: 0, left: 0 }
+    ])
+    .raw()
+    .toBuffer();
+
+
+  return [{ buffer: combined }];
+}
+
 
 export async function stillPanel(iconPath: string, sizePercentage: number = 100): Promise<Buffer> {
   const _height = 160 * (sizePercentage / 100);
@@ -285,7 +328,6 @@ export async function loadingAnimation(deck: any) {
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
-
 }
 
 
