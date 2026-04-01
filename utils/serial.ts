@@ -137,8 +137,9 @@ export async function sendButtonColors(port: SerialPort, colors: string[]) {
     }
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // while (true) {
-    //     if (myRun !== runId) return;
-    // }
+    while (true) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+        if (myRun !== runId) return;
+    }
 
 }
