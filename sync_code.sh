@@ -30,6 +30,8 @@ export NVM_DIR="/userdata/system/.nvm"
 export PATH="/userdata/system/.nvm/versions/node/v24.10.0/bin:$PATH"
 export PM2_HOME="/userdata/system/.pm2"
 
+rm -R ~/controls/stream-deck/cache/
+
 pm2 restart 0
 EOF
 

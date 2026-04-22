@@ -8,6 +8,8 @@ import gameColors from "../buttons/game.ts";
 import defaultColors from "../buttons/default.ts";
 import * as streamDeck from './stream-deck.ts';
 import { sendButtonColors } from './buttons.ts';
+import { SerialPort } from 'serialport';
+import { delay } from './utils.ts';
 
 
 type ButtonBody = {
@@ -16,8 +18,20 @@ type ButtonBody = {
     rom: string // ie: '/userdata/roms/fbneo/mk2.7z'
 }
 
-export function start() {
-    const port = openSerialPort();
+let port: SerialPort | null = null;
+
+export async function start() {
+
+    while (!port) {
+        try {
+            port = await openSerialPort();
+        } catch (e) {
+            await delay(5000);
+        }
+    }
+
+
+
     const app = express();
     app.use(express.json());
     app.use(cors());
@@ -29,7 +43,7 @@ export function start() {
         console.log(body);
 
 
-        if ("event" in body) {
+        if ("event" in body && port) {
             switch (body.event) {
                 case "gameStart": {
                     streamDeck.goToPage(streamDeck.pageNames.GAME_COMMON);

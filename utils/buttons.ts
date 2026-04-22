@@ -1,5 +1,5 @@
 import { SerialPort } from "serialport";
-import { delay } from "./utils";
+import { delay } from "./utils.ts";
 
 let runId = 0;
 export async function sendButtonColors(port: SerialPort, colors: string[]) {
@@ -43,6 +43,7 @@ export async function sendButtonColors(port: SerialPort, colors: string[]) {
         const finalColors = [..._player1Top.slice(0, 4), ..._player1Bottom.slice(0, 4), ...p1StartSelect, ..._player2Top.slice(0, 4), ..._player2Bottom.slice(0, 4), ...p2StartSelect];
 
         const json = { "buttons": finalColors };
+        console.log(json);
         port.write(JSON.stringify(json));
         await delay(50);
     }

@@ -1,26 +1,27 @@
 import { SerialPort } from "serialport"
 
 
-export function openSerialPort(path?: string, baudRate?: number) {
+export function openSerialPort(path?: string, baudRate?: number): Promise<SerialPort> {
+    return new Promise((resolve, reject) => {
+        const port = new SerialPort({
+            path: path || '/dev/ttyACM0',
+            baudRate: baudRate || 115200,
+        })
 
-    const port = new SerialPort({
-        path: path || '/dev/ttyACM0',
-        baudRate: baudRate || 115200,
-    })
+        port.on('open', () => {
+            console.log('Serial port opened')
+            resolve(port);
+        })
 
-    port.on('open', () => {
-        console.log('Serial port opened')
-    })
+        port.on('data', (data) => {
+            console.log('Received:', data.toString())
+        })
 
-    port.on('data', (data) => {
-        console.log('Received:', data.toString())
-    })
+        port.on('error', (err) => {
+            console.error('Error:', err.message)
+            reject(err);
+        })
 
-    port.on('error', (err) => {
-        console.error('Error:', err.message)
-    })
-
-    return port;
+    });
 }
-
 

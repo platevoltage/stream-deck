@@ -1,6 +1,6 @@
 import path from "path";
 import type { StreamDeck } from "@elgato-stream-deck/node";
-import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon } from "./utils.ts"
+import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon, customIcon } from "./utils.ts"
 import type { ImageFrame } from "./utils.ts"
 import { char, echo, KEY, sendByte, sendCommand } from "./linux.ts";
 import { fileURLToPath } from 'url';
@@ -11,7 +11,8 @@ const __dirname = path.join(path.dirname(__filename), "..");
 export const pageNames = {
     EMULATION_STATION: 0,
     GAME_COMMON: 1,
-    EXIT_CONFIRM: 2
+    EXIT_CONFIRM: 2,
+    RESTART_CONFIRM: 3,
 }
 
 /* [
@@ -24,21 +25,15 @@ export const pageNames = {
 ] */
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     [ // EMULATION_STATION
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-blue.gif`), "More...", 70),
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-push.gif`), "Volume +", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-ty.gif`), "Volume -", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "Exit Game", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "", 90, false),
+        await animatedIcon(path.resolve(__dirname, "images", `metal-slug.gif`), "Volume +", 100, false),
+        await animatedIcon(path.resolve(__dirname, "images", `metalslug-zombie.gif`), "Volume -", 100, false),
+        await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "", 90, false),
         await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
         await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
-        // await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "More...", 70, false),
-        // await animatedIcon(path.resolve(__dirname, "images", `metal-slug.gif`), "Volume +", 100, false),
-        // await animatedIcon(path.resolve(__dirname, "images", `metalslug-zombie.gif`), "Volume -", 100, false),
-        // await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "Exit Game", 70, false),
-        // await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
-        // await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
     ],
     [   // GAME_COMMON
-        await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
+        await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "Pause", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
         await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
@@ -46,42 +41,53 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
         await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
     ],
     [ // EXIT_CONFIRM
-        await solidColorIcon([0, 100, 0], "Yes"),
-        await solidColorIcon([0, 0, 140]),
-        await solidColorIcon([100, 0, 0], "No"),
-        await solidColorIcon([0, 0, 140], "Sure?"),
-        await solidColorIcon([0, 0, 140], "You"),
-        await solidColorIcon([0, 0, 140], "Are"),
-    ]
-    // [
-    //     await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "More...", 70, false),
-    //     await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-    //     await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-    //     await animatedIcon(path.resolve(__dirname, "images", `sonic.gif`), "Menu", 70),
-    //     await animatedIcon(path.resolve(__dirname, "images", `star.gif`), "Exit Game", 70, false),
-    //     await stillIcon(path.resolve(__dirname, "images", `Super Mario 64 (USA).png`), "Mario"),
-    // ],
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-check.gif`), "", 100, false),
+        await solidColorIcon([0, 0, 0], ""),
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-X.gif`), "", 100, false),
+        await solidColorIcon([0, 0, 0], "Sure?"),
+        await solidColorIcon([0, 0, 0], "You"),
+        await solidColorIcon([0, 0, 0], "Are"),
+    ],
+    [ // RESTART_CONFIRM
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-check.gif`), "", 100, false),
+        await solidColorIcon([0, 0, 0], ""),
+        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-X.gif`), "", 100, false),
+        await solidColorIcon([0, 0, 0], "Sure?"),
+        await solidColorIcon([0, 0, 0], "You"),
+        await solidColorIcon([0, 0, 0], "Are"),
+    ],
 ];
 
 const actions: (() => unknown)[/*page*/][/*key*/] = [
     [
-        goToNextPage,
+        () => null,
         () => sendCommand("batocera-audio setSystemVolume +5"),
         () => sendCommand("batocera-audio setSystemVolume -5"),
-        () => sendByte(KEY.F3),
-        () => sendByte(char("h")),
-        () => sendByte(KEY.F1),
+        () => null,
+        () => sendByte(KEY.SPACE),
+        () => sendByte(KEY.RETURN),
     ],
     [
-        goToNextPage,
+        () => sendByte(KEY.F7),
         () => sendByte(KEY.F4),
         () => sendByte(KEY.F3),
         () => goToPage(pageNames.EXIT_CONFIRM),
-        () => sendByte(char("h")),
+        () => goToPage(pageNames.RESTART_CONFIRM),
         () => sendByte(KEY.F1),
     ],
     [
         () => sendCommand("batocera-es-swissknife --emukill"),
+        () => null,
+        () => goToPage(pageNames.GAME_COMMON),
+        () => null,
+        () => null,
+        () => null,
+    ],
+    [
+        () => {
+            sendByte(KEY.F10);
+            goToPage(pageNames.GAME_COMMON);
+        },
         () => null,
         () => goToPage(pageNames.GAME_COMMON),
         () => null,

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url';
 import gifFrames from "gif-frames";
 import { crc32 } from 'crc';
 import path from "path";
-import { sendButtonColors } from './buttons';
+import { sendButtonColors } from './buttons.ts';
 
 const ROTATE = 180;
 
@@ -67,8 +67,8 @@ export async function solidColorIcon(color: [number, number, number], label: str
           text-anchor: middle;
         }
       </style>
-      <rect width="100%" height="100%" fill="#00000000" />
-      <text x="50%" y="90%" class="label">${label}</text>
+      <rect width="100%" height="100%" fill="rgb(${color[0]}, ${color[1]}, ${color[2]})" />
+      <text x="50%" y="10%" class="label">${label}</text>
     </svg>
   `;
 
@@ -83,8 +83,52 @@ export async function solidColorIcon(color: [number, number, number], label: str
     create: {
       width: 80,
       height: 80,
-      channels: 4,
-      background: { r: color[0], g: color[1], b: color[2], alpha: 1 }
+      channels: 3,
+      background: { r: 0, g: 0, b: 0, alpha: 0 }
+    }
+  })
+    .composite([
+      { input: text, top: 0, left: 0 }
+    ])
+    .raw()
+    .toBuffer();
+
+
+  return [{ buffer: combined }];
+}
+
+export async function customIcon(color: [number, number, number], label: string = ""): Promise<ImageFrame[]> {
+  const textSvg = `
+    <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        .label {
+          fill: white;
+          font-size: 14px;
+          font-weight: 700;
+          font-family: sans-serif;
+          dominant-baseline: middle;
+          text-anchor: middle;
+        }
+      </style>
+      <rect width="100%" height="100%" fill="rgb(${color[0]}, ${color[1]}, ${color[2]})" />
+      <rect width="50%" height="50%" fill="rgb(0, 0, 140)" />
+      <text x="50%" y="10%" class="label">${label}</text>
+    </svg>
+  `;
+
+
+  const text = await sharp(Buffer.from(textSvg))
+    .resize(80, 80)
+    .rotate(ROTATE)
+    .toBuffer();
+
+
+  const combined = await sharp({
+    create: {
+      width: 80,
+      height: 80,
+      channels: 3,
+      background: { r: 0, g: 0, b: 0, alpha: 0 }
     }
   })
     .composite([
@@ -166,7 +210,7 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
         }
       </style>
       <rect width="100%" height="100%" fill="#00000000" />
-      <text x="50%" y="90%" class="label">${label}</text>
+      <text x="50%" y="10%" class="label">${label}</text>
     </svg>
   `;
 
@@ -187,7 +231,8 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
     .composite([
       {
         input: icon,
-        top: Math.round((80 - width) / (label.length > 0 ? 6 : 2)),
+        // top: Math.round((80 - width) / (label.length > 0 ? 6 : 2)),
+        top: 0,
         left: Math.round((80 - width) / 2)
       },
       { input: text, top: 0, left: 0 }
@@ -253,7 +298,7 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
         }
       </style>
       <rect width="100%" height="100%" fill="#00000000" />
-      <text x="50%" y="90%" class="label">${label}</text>
+      <text x="50%" y="10%" class="label">${label}</text>
     </svg>
   `;
 
@@ -281,7 +326,8 @@ export async function animatedIcon(gifPath: string, label: string = "", sizePerc
       .composite([
         {
           input: image,
-          top: Math.round((80 - width) / (label.length > 0 ? 2 : 1)),
+          // top: Math.round((80 - width) / (label.length > 0 ? 2 : 1)),
+          top: 0,
           left: Math.round((80 - width) / 2)
         },
         { input: text, top: 0, left: 0 }
