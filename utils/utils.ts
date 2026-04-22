@@ -25,13 +25,9 @@ export async function delay(ms: number): Promise<void> {
 
 export async function setup(onKeyPress: (key: number) => void) {
 
-  // List the connected streamdecks
   const devices = await listStreamDecks();
   if (devices.length === 0) throw new Error("No streamdecks connected!");
 
-  // You must provide the devicePath yourself as the first argument to the constructor.
-  // For example: const myStreamDeck = new StreamDeck('\\\\?\\hid#vid_05f3&pid_0405&mi_00#7&56cf813&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}')
-  // On linux the equivalent would be: const myStreamDeck = new StreamDeck('0001:0021:00')
   const deck = await openStreamDeck(devices[0].path);
   const pressedKeys = new Set<number>();
 
@@ -45,7 +41,7 @@ export async function setup(onKeyPress: (key: number) => void) {
   });
 
   deck.on("down", (key) => {
-    if (pressedKeys.has(key.index)) return; // already pressed, ignore
+    if (pressedKeys.has(key.index)) return;
     pressedKeys.add(key.index);
     onKeyPress(key.index);
   });
@@ -257,7 +253,6 @@ export async function animatedIcon(gifName: string, label: string = "", sizePerc
   try {
     const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
     if (file) {
-      // console.log("found");
       return file;
     }
   } catch (e) {
@@ -316,7 +311,6 @@ export async function animatedIcon(gifName: string, label: string = "", sizePerc
     const image = await sharp(Buffer.from(_buffer.buffer))
       .resize(width, width, { fit: 'contain' })
       .rotate(ROTATE)
-      // .removeAlpha()         // strip alpha if present
       .toBuffer()
     const combined = await sharp({
       create: {
