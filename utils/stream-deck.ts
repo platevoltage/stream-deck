@@ -33,7 +33,7 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
         await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
         await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
     ],
-    [   // GAME_COMMON
+    [ // GAME_COMMON
         await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "Pause", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
         await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
@@ -60,7 +60,7 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
 ];
 
 const actions: Function[/*page*/][/*key*/] = [
-    [
+    [ // EMULATION_STATION
         () => null,
         () => sendCommand("batocera-audio setSystemVolume +5"),
         () => sendCommand("batocera-audio setSystemVolume -5"),
@@ -68,7 +68,7 @@ const actions: Function[/*page*/][/*key*/] = [
         () => sendByte(KEY.SPACE),
         () => sendByte(KEY.RETURN),
     ],
-    [
+    [ // GAME_COMMON
         () => sendByte(KEY.F7),
         () => sendByte(KEY.F4),
         () => sendByte(KEY.F3),
@@ -76,7 +76,7 @@ const actions: Function[/*page*/][/*key*/] = [
         () => goToPage(pageNames.RESTART_CONFIRM),
         () => sendByte(KEY.F1),
     ],
-    [
+    [ // EXIT_CONFIRM
         () => sendCommand("batocera-es-swissknife --emukill"),
         () => null,
         () => goToPage(pageNames.GAME_COMMON),
@@ -84,7 +84,7 @@ const actions: Function[/*page*/][/*key*/] = [
         () => null,
         () => null,
     ],
-    [
+    [ // RESTART_CONFIRM
         () => {
             sendByte(KEY.F10);
             goToPage(pageNames.GAME_COMMON);
