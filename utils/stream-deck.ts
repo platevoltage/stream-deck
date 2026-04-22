@@ -59,7 +59,7 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     ],
 ];
 
-const actions: (() => unknown)[/*page*/][/*key*/] = [
+const actions: Function[/*page*/][/*key*/] = [
     [
         () => null,
         () => sendCommand("batocera-audio setSystemVolume +5"),
