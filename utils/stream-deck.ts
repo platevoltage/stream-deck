@@ -1,4 +1,3 @@
-import path from "path";
 import type { StreamDeck } from "@elgato-stream-deck/node";
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon, customIcon } from "./utils.ts"
 import type { ImageFrame } from "./utils.ts"
