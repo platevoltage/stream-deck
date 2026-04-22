@@ -23,6 +23,7 @@ export const pageNames = {
   top middle,
   top left
 ] */
+
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     [ // EMULATION_STATION
         await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "", 90, false),
