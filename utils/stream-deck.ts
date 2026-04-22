@@ -3,12 +3,9 @@ import type { StreamDeck } from "@elgato-stream-deck/node";
 import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon, customIcon } from "./utils.ts"
 import type { ImageFrame } from "./utils.ts"
 import { char, echo, KEY, sendByte, sendCommand } from "./linux.ts";
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.join(path.dirname(__filename), "..");
 
-export const pageNames = {
+export const PAGE_NAMES = {
     EMULATION_STATION: 0,
     GAME_COMMON: 1,
     EXIT_CONFIRM: 2,
@@ -26,33 +23,33 @@ export const pageNames = {
 
 const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     [ // EMULATION_STATION
-        await animatedIcon(path.resolve(__dirname, "images", `metal-slug-guy.gif`), "", 90, false),
-        await animatedIcon(path.resolve(__dirname, "images", `metal-slug.gif`), "Volume +", 100, false),
-        await animatedIcon(path.resolve(__dirname, "images", `metalslug-zombie.gif`), "Volume -", 100, false),
-        await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-hot-gif.gif`), "", 90, false),
-        await animatedIcon(path.resolve(__dirname, "images", `fio-metalslug-picnic.gif`), "View", 100, false),
-        await animatedIcon(path.resolve(__dirname, "images", `metal-slug-knife.gif`), "Menu", 100, false),
+        await animatedIcon("metal-slug-guy.gif", "", 90, false),
+        await animatedIcon(`metal-slug.gif`, "Volume +", 100, false),
+        await animatedIcon(`metalslug-zombie.gif`, "Volume -", 100, false),
+        await animatedIcon(`fio-metalslug-hot-gif.gif`, "", 90, false),
+        await animatedIcon(`fio-metalslug-picnic.gif`, "View", 100, false),
+        await animatedIcon(`metal-slug-knife.gif`, "Menu", 100, false),
     ],
     [ // GAME_COMMON
-        await animatedIcon(path.resolve(__dirname, "images", `luigi.gif`), "Pause", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `mc.gif`), "Load State", 70, false),
-        await animatedIcon(path.resolve(__dirname, "images", `mm.gif`), "Save State", 70),
-        await animatedIcon(path.resolve(__dirname, "images", `game_over_inv.gif`), "Exit Game"),
-        await animatedIcon(path.resolve(__dirname, "images", `POW.gif`), "Restart"),
-        await animatedIcon(path.resolve(__dirname, "images", `bm.gif`), "Menu"),
+        await animatedIcon(`luigi.gif`, "Pause", 70, false),
+        await animatedIcon(`mc.gif`, "Load State", 70, false),
+        await animatedIcon(`mm.gif`, "Save State", 70),
+        await animatedIcon(`game_over_inv.gif`, "Exit Game"),
+        await animatedIcon(`POW.gif`, "Restart"),
+        await animatedIcon(`bm.gif`, "Menu"),
     ],
     [ // EXIT_CONFIRM
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-check.gif`), "", 100, false),
+        await animatedIcon(`bubble-bobble-check.gif`, "", 100, false),
         await solidColorIcon([0, 0, 0], ""),
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-X.gif`), "", 100, false),
+        await animatedIcon(`bubble-bobble-X.gif`, "", 100, false),
         await solidColorIcon([0, 0, 0], "Sure?"),
         await solidColorIcon([0, 0, 0], "You"),
         await solidColorIcon([0, 0, 0], "Are"),
     ],
     [ // RESTART_CONFIRM
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-check.gif`), "", 100, false),
+        await animatedIcon(`bubble-bobble-check.gif`, "", 100, false),
         await solidColorIcon([0, 0, 0], ""),
-        await animatedIcon(path.resolve(__dirname, "images", `bubble-bobble-X.gif`), "", 100, false),
+        await animatedIcon(`bubble-bobble-X.gif`, "", 100, false),
         await solidColorIcon([0, 0, 0], "Sure?"),
         await solidColorIcon([0, 0, 0], "You"),
         await solidColorIcon([0, 0, 0], "Are"),
@@ -72,14 +69,14 @@ const actions: Function[/*page*/][/*key*/] = [
         () => sendByte(KEY.F7),
         () => sendByte(KEY.F4),
         () => sendByte(KEY.F3),
-        () => goToPage(pageNames.EXIT_CONFIRM),
-        () => goToPage(pageNames.RESTART_CONFIRM),
+        () => goToPage(PAGE_NAMES.EXIT_CONFIRM),
+        () => goToPage(PAGE_NAMES.RESTART_CONFIRM),
         () => sendByte(KEY.F1),
     ],
     [ // EXIT_CONFIRM
         () => sendCommand("batocera-es-swissknife --emukill"),
         () => null,
-        () => goToPage(pageNames.GAME_COMMON),
+        () => goToPage(PAGE_NAMES.GAME_COMMON),
         () => null,
         () => null,
         () => null,
@@ -87,10 +84,10 @@ const actions: Function[/*page*/][/*key*/] = [
     [ // RESTART_CONFIRM
         () => {
             sendByte(KEY.F10);
-            goToPage(pageNames.GAME_COMMON);
+            goToPage(PAGE_NAMES.GAME_COMMON);
         },
         () => null,
-        () => goToPage(pageNames.GAME_COMMON),
+        () => goToPage(PAGE_NAMES.GAME_COMMON),
         () => null,
         () => null,
         () => null,

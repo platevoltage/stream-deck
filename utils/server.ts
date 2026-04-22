@@ -46,7 +46,7 @@ export async function start() {
         if ("event" in body && port) {
             switch (body.event) {
                 case "gameStart": {
-                    streamDeck.goToPage(streamDeck.pageNames.GAME_COMMON);
+                    streamDeck.goToPage(streamDeck.PAGE_NAMES.GAME_COMMON);
                     if ("rom" in body) {
                         const rom = body.rom;
                         const game = path.basename(rom, path.extname(rom));
@@ -69,7 +69,7 @@ export async function start() {
                 }
                 case "gameStop": {
                     sendButtonColors(port, defaultColors);
-                    streamDeck.goToPage(streamDeck.pageNames.EMULATION_STATION);
+                    streamDeck.goToPage(streamDeck.PAGE_NAMES.EMULATION_STATION);
                     break;
                 }
 

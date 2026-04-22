@@ -177,7 +177,9 @@ export async function stillPanel(iconPath: string, sizePercentage: number = 100)
   return combined
 }
 
-export async function stillIcon(iconPath: string, label: string = "", sizePercentage: number = 100): Promise<ImageFrame[]> {
+export async function stillIcon(iconName: string, label: string = "", sizePercentage: number = 100): Promise<ImageFrame[]> {
+  const iconPath = path.resolve(__dirname, "images", iconName)
+
   const crc = await getFileCRC32(iconPath);
   // console.log(path.basename(iconPath), 'CRC32:', crc);
 
@@ -245,7 +247,8 @@ export async function stillIcon(iconPath: string, label: string = "", sizePercen
   return [{ buffer: combined }];
 }
 
-export async function animatedIcon(gifPath: string, label: string = "", sizePercentage: number = 100, cumulative = true) {
+export async function animatedIcon(gifName: string, label: string = "", sizePercentage: number = 100, cumulative = true) {
+  const gifPath = path.resolve(__dirname, "images", gifName)
 
   const crc = await getFileCRC32(gifPath);
   const baseName = path.basename(gifPath);
