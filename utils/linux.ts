@@ -1,12 +1,8 @@
 import { exec } from "child_process";
 import { writeFileSync } from "fs";
+import { SERIAL_PATH } from "./serial";
 
 export function sendCommand(cmd: string) {
-
-    // The command you want to run
-    // const cmd = "batocera-es-swissknife --emukill";
-
-    // Execute the command
     exec(cmd, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error executing command: ${error.message}`);
@@ -19,29 +15,12 @@ export function sendCommand(cmd: string) {
         console.log(`stdout:\n${stdout}`);
     });
 
-}
-
-export function echo(arg: string) {
-    const cmd = `echo "${arg}" > /dev/ttyACM0`;
-
-    // Execute the command
-    exec(cmd, (error, stdout, stderr) => {
-        if (error) {
-            console.error(`Error executing command: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.error(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout:\n${stdout}`);
-    });
 }
 
 
 export function sendByte(byte: number) {
     const buf = Buffer.from([byte]);  // raw single byte
-    writeFileSync("/dev/ttyACM0", buf);
+    writeFileSync(SERIAL_PATH, buf);
 }
 
 export function char(c: string) {
@@ -104,3 +83,20 @@ export const KEY = {
     SCROLL_LOCK: 0xCF,
     PAUSE: 0xD0
 };
+
+// export function echo(arg: string) {
+//     const cmd = `echo "${arg}" > /dev/ttyACM0`;
+
+//     // Execute the command
+//     exec(cmd, (error, stdout, stderr) => {
+//         if (error) {
+//             console.error(`Error executing command: ${error.message}`);
+//             return;
+//         }
+//         if (stderr) {
+//             console.error(`stderr: ${stderr}`);
+//             return;
+//         }
+//         console.log(`stdout:\n${stdout}`);
+//     });
+// }

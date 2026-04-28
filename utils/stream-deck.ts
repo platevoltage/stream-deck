@@ -1,7 +1,8 @@
 import type { StreamDeck } from "@elgato-stream-deck/node";
-import { setup, stillIcon, animatedIcon, stillPanel, pageChange, loadingAnimation, delay, solidColorIcon, customIcon } from "./utils.ts"
-import type { ImageFrame } from "./utils.ts"
-import { char, echo, KEY, sendByte, sendCommand } from "./linux.ts";
+import { pageChange, loadingAnimation, delay, streamDeckSetup } from "./utils.ts"
+import { animatedIcon, solidColorIcon, type ImageFrame } from "./imageFrames.ts"
+import { char, KEY, sendByte, sendCommand } from "./linux.ts";
+import { deflateSync } from "zlib";
 
 
 export const PAGE_NAMES = {
@@ -39,19 +40,19 @@ const images: ImageFrame[/*page*/][/*key*/][/*frame*/] = [
     ],
     [ // EXIT_CONFIRM
         await animatedIcon(`bubble-bobble-check.gif`, "", 100, false),
-        await solidColorIcon([0, 0, 0], ""),
+        await solidColorIcon("#000000", ""),
         await animatedIcon(`bubble-bobble-X.gif`, "", 100, false),
-        await solidColorIcon([0, 0, 0], "Sure?"),
-        await solidColorIcon([0, 0, 0], "You"),
-        await solidColorIcon([0, 0, 0], "Are"),
+        await solidColorIcon("#000000", "Sure?"),
+        await solidColorIcon("#000000", "You"),
+        await solidColorIcon("#000000", "Are"),
     ],
     [ // RESTART_CONFIRM
         await animatedIcon(`bubble-bobble-check.gif`, "", 100, false),
-        await solidColorIcon([0, 0, 0], ""),
+        await solidColorIcon("#000000", ""),
         await animatedIcon(`bubble-bobble-X.gif`, "", 100, false),
-        await solidColorIcon([0, 0, 0], "Sure?"),
-        await solidColorIcon([0, 0, 0], "You"),
-        await solidColorIcon([0, 0, 0], "Are"),
+        await solidColorIcon("#000000", "Sure?"),
+        await solidColorIcon("#000000", "You"),
+        await solidColorIcon("#000000", "Are"),
     ],
 ];
 
@@ -93,6 +94,7 @@ const actions: Function[/*page*/][/*key*/] = [
     ],
 ];
 
+
 let currentPage = 0;
 let pause = false;
 let loading = true;
@@ -101,7 +103,7 @@ let deck: StreamDeck | null = null;
 export async function start(NUM_KEYS: number) {
     while (!deck) {
         try {
-            deck = (await setup(onKeyPress)).deck;
+            deck = (await streamDeckSetup(onKeyPress)).deck;
             console.log(deck);
             deck.setBrightness(60);
         } catch (e) {
@@ -118,11 +120,12 @@ export async function start(NUM_KEYS: number) {
 
 
 
-    const frames: number[/*page*/][/*key*/] = [];
+    // const frames: number[/*page*/][/*key*/] = [];
+    // const keys = new Array(NUM_KEYS).fill(0);
+    // images.forEach(() => frames.push([...keys]));
+
     const keys = new Array(NUM_KEYS).fill(0);
-    images.forEach(() => frames.push([...keys]));
-
-
+    const frames: number[/*page*/][/*key*/] = images.map(() => [...keys]);
 
     loading = false;
     await delay(4000);

@@ -1,11 +1,14 @@
 import { SerialPort } from "serialport"
 
+export const SERIAL_PATH = "/dev/ttyACM0";
+export const SERIAL_BAUD = 115200;
 
-export function openSerialPort(path?: string, baudRate?: number): Promise<SerialPort> {
+
+export function openSerialPort(): Promise<SerialPort> {
     return new Promise((resolve, reject) => {
         const port = new SerialPort({
-            path: path || '/dev/ttyACM0',
-            baudRate: baudRate || 115200,
+            path: SERIAL_PATH,
+            baudRate: SERIAL_BAUD,
         })
 
         port.on('open', () => {
