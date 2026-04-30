@@ -1,14 +1,15 @@
 
 import sharp from 'sharp';
-import { openStreamDeck, listStreamDecks, StreamDeck } from "@elgato-stream-deck/node";
-import fs from "fs"
+import { openStreamDeck, listStreamDecks } from "@elgato-stream-deck/node";
+import type { StreamDeck } from "@elgato-stream-deck/node";
+import fs from "fs";
 import { fileURLToPath } from 'url';
 /* @ts-ignore */
 import gifFrames from "gif-frames";
 import { crc32 } from 'crc';
 import path from "path";
 import { sendButtonColors } from './buttons.ts';
-import { ImageFrame } from './imageFrames.ts';
+import type { ImageFrame } from './imageFrames.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

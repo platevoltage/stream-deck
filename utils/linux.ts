@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import { writeFileSync } from "fs";
-import { SERIAL_PATH } from "./serial";
+import { SERIAL_PATH } from "./serial.ts";
 
 export function sendCommand(cmd: string) {
     exec(cmd, (error, stdout, stderr) => {

@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { getFileCRC32, loadImagesFromFile, saveImagesToFile } from './utils';
+import { getFileCRC32, loadImagesFromFile, saveImagesToFile } from './utils.ts';
 import path from "path";
 /* @ts-ignore */
 import gifFrames from "gif-frames";
@@ -135,13 +135,13 @@ export async function stillPanel(iconPath: string, sizePercentage: number = 100)
 }
 
 export async function stillIcon(iconName: string, label: string = "", sizePercentage: number = 100): Promise<ImageFrame[]> {
-    const iconPath = path.resolve(__dirname, "images", iconName)
+    const iconPath = path.resolve(path.dirname("../"), "images", iconName)
 
     const crc = await getFileCRC32(iconPath);
     // console.log(path.basename(iconPath), 'CRC32:', crc);
 
     try {
-        const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
+        const file = await loadImagesFromFile(path.join(path.dirname("../"), "cache", crc + ".json"));
         if (file) {
             // console.log("found");
             return file;
@@ -205,14 +205,13 @@ export async function stillIcon(iconName: string, label: string = "", sizePercen
 }
 
 export async function animatedIcon(gifName: string, label: string = "", sizePercentage: number = 100, cumulative = true) {
-    const gifPath = path.resolve(__dirname, "images", gifName)
-
+    const gifPath = path.resolve(path.dirname("../"), "images", gifName);
     const crc = await getFileCRC32(gifPath);
     const baseName = path.basename(gifPath);
     console.log(baseName, 'CRC32:', crc);
 
     try {
-        const file = await loadImagesFromFile(path.join(__dirname, "../", "cache", crc + ".json"));
+        const file = await loadImagesFromFile(path.join(path.dirname("../"), "cache", crc + ".json"));
         if (file) {
             return file;
         }
@@ -295,7 +294,7 @@ export async function animatedIcon(gifName: string, label: string = "", sizePerc
         images.push({ buffer: combined, delay: _buffer.delay });
     }
 
-    saveImagesToFile(images, path.join(__dirname, "../", "cache", crc + ".json"));
+    saveImagesToFile(images, path.join(path.dirname("../"), "cache", crc + ".json"));
 
     return images;
 }
